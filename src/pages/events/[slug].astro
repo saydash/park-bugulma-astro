@@ -96,6 +96,56 @@ const imageUrl = getFeaturedImage(post);
     transition: transform 0.3s ease;
   }
   .pswp-gallery-item:hover img { transform: scale(1.03); }
+    /* Выносим галерею за пределы узкого текстового блока */
+  .prose .gallery, 
+  .prose .wp-block-gallery,
+  .wp-custom-gallery {
+    display: grid !important;
+    /* На мобилках 2 колонки, на планшетах 3, на мониторах 4 */
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+    margin: 4rem 0 !important;
+    
+    /* Магия выноса: расширяем блок относительно узкого родителя */
+    width: 100vw !important;
+    max-width: 1200px !important; /* Ширина на 4 колонки */
+    position: relative !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  @media (min-width: 768px) {
+    .prose .gallery {
+      grid-template-columns: repeat(3, 1fr) !important;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .prose .gallery {
+      grid-template-columns: repeat(4, 1fr) !important; /* Те самые 4 в ряд */
+    }
+  }
+
+  /* Оформление превью (теперь они будут чуть меньше и аккуратнее) */
+  .pswp-gallery-item {
+    display: block !important;
+    aspect-ratio: 1/1 !important; /* Квадратные превью в сетке выглядят профессиональнее */
+    overflow: hidden !important;
+    border-radius: 4px !important;
+    background: #f8f8f8 !important;
+  }
+
+  .pswp-gallery-item img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    margin: 0 !important;
+    transition: transform 0.4s ease !important;
+  }
+
+  .pswp-gallery-item:hover img {
+    transform: scale(1.05) !important;
+  }
 </style>
 
 
