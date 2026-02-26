@@ -75,79 +75,97 @@ const imageUrl = getFeaturedImage(post);
 </BaseLayout>
 
 <style is:global>
-  /* Стилизуем любые изображения, которые пришли из контента WP */
-  .prose img {
-    border-radius: 12px; /* замена rounded-lg */
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); /* замена shadow-md */
-    margin-top: 2rem;
-    margin-bottom: 2rem;
+  /* Умная сетка галереи (Masonry-стиль) */
+  .wp-custom-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-auto-rows: 300px;
+    grid-auto-flow: dense; /* Заполняет пустые места */
+    gap: 12px;
+    margin: 4rem 0;
+  }
+
+  .gallery-item {
+    position: relative;
+    overflow: hidden;
+    background: #f4f4f4;
+    cursor: pointer;
+  }
+
+  /* Делаем каждое третье фото широким для интереса */
+  .gallery-item:nth-child(3n) {
+    grid-column: span 2;
+  }
+
+  .gallery-item img {
     width: 100%;
-    height: auto;
+    height: 100%;
     object-fit: cover;
-    max-height: 600px;
-    display: block;
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Если картинки обернуты в ссылки (лайтбоксы) */
-  .prose a:has(img) {
-    display: block;
-    border: none !important;
-    transition: opacity 0.3s ease;
-  }
-  
-  .prose a:has(img):hover {
-    opacity: 0.9;
+  .gallery-item:hover img {
+    transform: scale(1.08);
   }
 
-  /* Сетка для галерей: если картинки идут друг за другом */
-  /* Пытаемся поймать параграфы, содержащие только изображения */
-  .prose p:has(img) {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    justify-content: center;
+  /* Эффект при наведении (бирюзовая вуаль) */
+  .gallery-item::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #14b8a6; /* teal-600 */
+    opacity: 0;
+    transition: opacity 0.4s ease;
   }
 
-  .prose p:has(img) img {
-    flex: 1 1 300px; /* Позволяет картинкам вставать в ряд */
-    margin: 0;
-  }
-
-  /* Очистка мусора Visual Composer */
-  .prose div[class^="vc_"] {
-    display: contents; /* Заставляет вложенные элементы игнорировать обертку VC */
+  .gallery-item:hover::after {
+    opacity: 0.1;
   }
 </style>
 
 
+
 <script is:inline>
-  async function initGallery() {
+  async function loadAdvancedGallery() {
     const galleries = document.querySelectorAll('.wp-custom-gallery');
     
     for (const gallery of galleries) {
       const ids = gallery.getAttribute('data-ids').split(',');
       
-      // Чтобы не перегружать сервер, грузим по 1 фото
       for (const id of ids) {
-        const target = `https://parkbugulma.ru{id.trim()}`;
-        const proxy = `https://api.allorigins.win{encodeURIComponent(target)}`;
+        const targetUrl = `https://parkbugulma.ru{id.trim()}`;
+        // Используем прокси, так как хостинг может блокировать прямые запросы
+        const proxyUrl = `https://api.allorigins.win{encodeURIComponent(targetUrl)}`;
 
         try {
-          const res = await fetch(proxy);
-          const data = await res.json();
+          const response = await fetch(proxyUrl);
+          const media = await response.json();
           
-          if (data.source_url) {
-            const div = document.createElement('div');
-            // Стили в духе нашего нового дизайна
-            div.className = "w-full md:w-[calc(33.33%-1rem)] aspect-square overflow-hidden bg-gray-100 rounded-sm";
-            div.innerHTML = `<img src="${data.source_url}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500" loading="lazy" />`;
-            gallery.appendChild(div);
-            gallery.classList.add('grid', 'grid-cols-2', 'md:grid-cols-3', 'gap-4');
+          if (media.source_url) {
+            const link = document.createElement('a');
+            link.setAttribute('data-fslightbox', 'gallery'); // Группируем фото для пролистывания
+            link.setAttribute('href', media.source_url);
+            link.className = 'gallery-item block';
+            
+            link.innerHTML = `
+              <img src="${media.source_url}" 
+                   alt="Фото события" 
+                   loading="lazy" />
+            `;
+            
+            gallery.appendChild(link);
           }
-        } catch (e) { console.warn("Skip ID:", id); }
+        } catch (e) {
+          console.error("Ошибка ID:", id);
+        }
       }
     }
+    // Переинициализируем лайтбокс после добавления новых элементов
+    if (typeof refreshFsLightbox === 'function') {
+      refreshFsLightbox();
+    }
   }
-  initGallery();
+
+  loadAdvancedGallery();
 </script>
 
