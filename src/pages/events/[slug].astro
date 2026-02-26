@@ -75,73 +75,82 @@ const imageUrl = getFeaturedImage(post);
 </BaseLayout>
 
 <!-- 1. СТИЛИ ГАЛЕРЕИ (вставляем прямо перед контентом) -->
-<style is:inline>
-  /* Жестко задаем сетку, игнорируя всё остальное */
-  .wp-custom-gallery {
+<style is:global>
+  /* 1. Находим стандартную обертку галереи из WordPress и превращаем в сетку */
+  .prose .gallery, 
+  .prose .wp-block-gallery {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
     margin: 3rem 0 !important;
     padding: 0 !important;
-    list-style: none !important;
   }
 
   @media (min-width: 768px) {
-    .wp-custom-gallery {
+    .prose .gallery, 
+    .prose .wp-block-gallery {
       grid-template-columns: repeat(3, 1fr) !important;
     }
-    .gallery-item:nth-child(4n) { grid-column: span 2 !important; }
   }
 
-  .gallery-item {
+  /* 2. Чистим элементы внутри галереи от старых стилей WP */
+  .prose .gallery-item, 
+  .prose .gallery-icon {
+    margin: 0 !important;
     display: block !important;
+    width: 100% !important;
     aspect-ratio: 3/2 !important;
-    background: #f0f0f0 !important;
     overflow: hidden !important;
     border-radius: 8px !important;
-    margin: 0 !important;
   }
 
-  .gallery-item img {
+  /* 3. Оформляем сами картинки */
+  .prose .gallery-item img, 
+  .prose .gallery-icon img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
     margin: 0 !important;
-    transition: transform 0.4s ease !important;
+    transition: transform 0.5s ease !important;
+    cursor: zoom-in !important;
   }
-  .gallery-item:hover img { transform: scale(1.05) !important; }
+
+  .prose .gallery-item img:hover {
+    transform: scale(1.05) !important;
+  }
+
+  /* Убираем подписи под фото, если они мешают */
+  .prose .gallery-caption {
+    display: none !important;
+  }
 </style>
 
 <!-- 2. СКРИПТ ПОДГРУЗКИ (с автоматическим Lightbox) -->
 <script is:inline src="https://cdnjs.cloudflare.com"></script>
 
 <script is:inline>
-  // Используем MutationObserver, чтобы поймать момент появления div в DOM
-  const observer = new MutationObserver((mutations) => {
-    document.querySelectorAll('.wp-custom-gallery:not(.is-loading)').forEach(async (gallery) => {
-      gallery.classList.add('is-loading');
-      const ids = gallery.getAttribute('data-ids').split(',');
-      
-      for (const id of ids) {
-        const url = `https://parkbugulma.ru{id.trim()}`;
-        const proxy = `https://api.allorigins.win{encodeURIComponent(url)}`;
-
-        try {
-          const res = await fetch(proxy);
-          const data = await res.json();
-          if (data.source_url) {
-            const a = document.createElement('a');
-            a.className = 'gallery-item';
-            a.setAttribute('data-fslightbox', 'post-gallery');
-            a.setAttribute('href', data.source_url);
-            a.innerHTML = `<img src="${data.source_url}" loading="lazy" />`;
-            gallery.appendChild(a);
-            if (window.refreshFsLightbox) refreshFsLightbox();
-          }
-        } catch (e) { console.error(id); }
+  function fixWordPressGallery() {
+    // Находим все картинки внутри галерей WordPress
+    const images = document.querySelectorAll('.prose .gallery-icon img, .prose .gallery-item img');
+    
+    images.forEach(img => {
+      // Если картинка еще не обернута в ссылку для лайтбокса
+      if (!img.parentElement.hasAttribute('data-fslightbox')) {
+        const link = document.createElement('a');
+        link.setAttribute('data-fslightbox', 'wp-gallery');
+        link.setAttribute('href', img.src.replace(/-[0-9]+x[0-9]+/, '')); // Пытаемся получить оригинал фото
+        
+        // Оборачиваем
+        img.parentNode.insertBefore(link, img);
+        link.appendChild(img);
       }
     });
-  });
+    
+    // Обновляем лайтбокс
+    if (window.refreshFsLightbox) refreshFsLightbox();
+  }
 
-  observer.observe(document.body, { childList: true, subtree: true });
+  // Запускаем сразу и через секунду (на случай медленной подгрузки)
+  window.addEventListener('load', fixWordPressGallery);
+  setTimeout(fixWordPressGallery, 1500);
 </script>
