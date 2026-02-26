@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+// Импортируем утилиты для очистки текста и поиска картинок
+import { getCleanText, getFeaturedImage } from '../utils.js';
+
+// Принимаем данные: заголовок, массив постов и количество колонок (по умолчанию 2)
+const { title, posts, gridCols = "md:grid-cols-2" } = Astro.props;
+---
+
+<BaseLayout title={title}>
+  <div class="max-w-6xl mx-auto px-6 py-16">
+    
+    <!-- Шапка категории -->
+    <header class="mb-16">
+      <h1 class="text-5xl font-black text-park-dark tracking-tighter uppercase leading-none">
+        {title}
+      </h1>
+      <div class="h-2 w-20 bg-park-green mt-6 rounded-full"></div>
+    </header>
+
+    <!-- Сетка постов -->
+    <div class={`grid grid-cols-1 ${gridCols} gap-8`}>
+      {posts && posts.length > 0 ? (
+        posts.map((post) => {
+          // Получаем URL картинки через нашу функцию из utils.js
+          const imageUrl = getFeaturedImage(post);
+          
+          return (
+            <a 
+              href={`/events/${decodeURIComponent(post.slug)}`} 
+              class="group flex flex-col md:flex-row bg-white rounded-park p-4 border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 no-underline gap-6"
+            >
+              <!-- Блок изображения -->
+              <div class="w-full md:w-48 h-48 bg-slate-100 rounded-park overflow-hidden flex-shrink-0 relative">
+                {imageUrl ? (
+                  <img 
+                    src={imageUrl} 
+                    alt={post.title.rendered}
+                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                ) : (
+                  <div class="flex items-center justify-center h-full text-[10px] text-slate-300 uppercase font-bold bg-slate-50 text-center px-4">
+                    Нет фото <br/> ID: {post.id}
+                  </div>
+                )}
+                <!-- Легкий оверлей при наведении -->
+                <div class="absolute inset-0 bg-park-green/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              </div>
+
+              <!-- Контентная часть -->
+              <div class="flex flex-col justify-center py-2 flex-grow">
+                <time class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-2">
+                  {new Date(post.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </time>
+                
+                <h2 
+                  class="text-xl font-bold text-slate-800 group-hover:text-indigo-600 leading-tight mb-3 transition-colors" 
+                  set:html={post.title.rendered} 
+                />
+                
+                <p class="text-slate-500 text-sm line-clamp-3 leading-relaxed">
+                  {getCleanText(post.content.rendered).substring(0, 130)}...
+                </p>
+                
+                <div class="mt-4 flex items-center text-xs font-bold text-slate-400 group-hover:text-indigo-600 transition-colors uppercase tracking-widest">
+                  Читать полностью
+                  <svg xmlns="http://www.w3.org" class="h-3 w-3 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </div>
+              </div>
+            </a>
+          );
+        })
+      ) : (
+        <div class="col-span-full py-20 text-center">
+          <p class="text-slate-400 font-medium text-lg italic">В этой рубрике пока нет записей...</p>
+          <a href="/" class="text-indigo-600 font-bold hover:underline mt-4 inline-block">Вернуться на главную</a>
+        </div>
+      )}
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,140 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="О парке — История и современность">
+  <article class="bg-white min-h-screen">
+    
+    <!-- HERO СЕКЦИЯ -->
+    <section class="relative h-[70vh] min-h-[450px] w-full overflow-hidden bg-[#222222]">
+      <img 
+        src="https://parkbugulma.ru/wp-content/uploads/photoalbum/parkphoto/parkphoto-(5).jpg" 
+        class="absolute inset-0 w-full h-full object-cover" 
+        alt="Панорама парка Бугульма"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-[#222222]/90 via-[#222222]/20 to-transparent"></div>
+      <div class="relative z-10 h-full max-w-7xl mx-auto px-6 flex flex-col justify-end pb-20">
+        <h1 class="text-6xl md:text-[120px] font-black text-white tracking-tighter uppercase leading-[0.8] mb-4 drop-shadow-2xl">
+          О <span class="font-light italic text-teal-600 opacity-60">парке</span>
+        </h1>
+      </div>
+    </section>
+
+    <!-- ИСТОРИЧЕСКИЙ БЛОК -->
+    <section class="max-w-7xl mx-auto px-6 py-32 grid grid-cols-1 md:grid-cols-12 gap-16 border-t border-[#e5e5e5]">
+      <div class="md:col-span-4">
+        <div class="sticky top-32">
+          <div class="h-px w-16 bg-teal-600 mb-8"></div>
+          <p class="text-[11px] font-black uppercase tracking-[0.4em] text-[#222222]/30 leading-relaxed italic">
+            От мемориала 1938 года <br/> до современного центра <br/> притяжения
+          </p>
+        </div>
+      </div>
+
+      <div class="md:col-span-8">
+        <div class="prose prose-slate prose-xl max-w-none prose-p:text-[#222222]/80 prose-p:font-light prose-p:leading-relaxed">
+          <h2 class="text-4xl font-black text-[#222222] tracking-tighter uppercase mb-12">История <span class="text-teal-600 italic font-light opacity-40 leading-none">поколений</span></h2>
+          
+          <p>Бугульминский парк культуры и отдыха ведет свою летопись с <strong>1938 года</strong>. В те времена он закладывался как мемориал борцам за революцию, вокруг которого началось бережное озеленение территории.</p>
+          
+          <p>Парк рос вместе с городом: в 1955-м здесь зацвел большой сад, а в 1968 году территория официально стала <strong>Детским парком</strong>. С аттракционами советской эпохи парк проработал два десятилетия, пока в 2009 году не завершилась масштабная реконструкция, подарившая горожанам современное и демократичное место для отдыха.</p>
+
+          <blockquote class="border-l-4 border-teal-500 pl-8 my-16 italic text-2xl font-light text-[#222222]/60">
+            «Для многих жителей Бугульмы отдых в парке становится зачастую единственной возможностью провести время на воздухе и принять участие в массовых развлечениях».
+          </blockquote>
+
+          <h3 class="text-3xl font-black text-[#222222] tracking-tighter uppercase mt-24 mb-10 text-teal-600/60">Культура и события</h3>
+          <p>Сегодня парк — это базовый досуговый объект. Каждый сезон здесь наполнен смыслами: от новогодних огней и Масленичных гуляний сжиганием чучела до мусульманского праздника Навруз и торжественных встреч 9 мая.</p>
+          
+          <p>Мы гордимся нашими уникальными проектами: фестивалями рок-музыки, семейными «Шар-шоу» и легендарным конкурсом <strong>«Бег в ползунках»</strong> для самых маленьких бугульминцев. Каждое выходное утро парк приглашает на «Бугазарядку» тех, кто заботится о своем здоровье.</p>
+        </div>
+
+        <!-- ТАЙМЛАЙН ПАРКА (Bento Grid) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#e5e5e5] border border-[#e5e5e5] mt-24 overflow-hidden rounded-sm">
+          {[
+            { year: '1938', desc: 'Основание мемориала' },
+            { year: '1968', desc: 'Детский парк' },
+            { year: '2009', desc: 'Новая эра' },
+            { year: '2024', desc: 'Ваша история' },
+          ].map(event => (
+            <div class="bg-white p-8 hover:bg-[#fafafa] transition-colors">
+              <div class="text-2xl font-black text-teal-600 mb-2">{event.year}</div>
+              <div class="text-[9px] font-bold uppercase tracking-widest text-[#222222]/40">{event.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+        <!-- СЕКЦИЯ: ФОТОАРХИВ ПАРКА (Усиленная Bento-сетка) -->
+    <section class="max-w-7xl mx-auto px-6 py-32 border-t border-[#e5e5e5]">
+      <div class="flex flex-col md:flex-row justify-between items-baseline mb-16 gap-6">
+        <h2 class="text-4xl md:text-6xl font-black tracking-tighter uppercase text-[#222222]">
+          Фото <span class="font-light italic text-teal-600 opacity-30 leading-none">архив</span>
+        </h2>
+        <div class="text-[10px] font-black text-[#222222]/20 uppercase tracking-[0.4em]">
+          Life / Events / Moments
+        </div>
+      </div>
+
+      <!-- ГЛАВНАЯ СЕТКА: На десктопе жесткие 4 колонки и 2 ряда -->
+      <div class="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 h-auto md:h-[800px]">
+        
+        <!-- 1. Вертикальный акцент (на 2 ряда высотой) -->
+        <div class="md:col-span-2 md:row-span-2 relative overflow-hidden group bg-[#f4f4f4] h-[500px] md:h-full">
+          <img 
+            src="https://parkbugulma.ru/wp-content/uploads/oparke/oparkeludi/ludi-(1).JPG" 
+            class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
+            alt="Посетители"
+          />
+        </div>
+
+        <!-- 2. Горизонтальный блок справа сверху -->
+        <div class="md:col-span-2 md:row-span-1 relative overflow-hidden group bg-[#f4f4f4] h-[300px] md:h-full">
+          <img 
+            src="https://parkbugulma.ru/wp-content/uploads/oparke/oparkeludi/ludi-(2).JPG" 
+            class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
+            alt="События"
+          />
+        </div>
+
+        <!-- 3. Квадрат справа снизу (1) -->
+        <div class="md:col-span-1 md:row-span-1 relative overflow-hidden group bg-[#f4f4f4] h-[300px] md:h-full">
+          <img 
+            src="https://parkbugulma.ru/wp-content/uploads/oparke/oparkeludi/ludi-(3).JPG" 
+            class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
+            alt="Дети"
+          />
+        </div>
+
+        <!-- 4. Квадрат справа снизу (2) -->
+        <div class="md:col-span-1 md:row-span-1 relative overflow-hidden group bg-[#f4f4f4] h-[300px] md:h-full">
+          <img 
+            src="https://parkbugulma.ru/wp-content/uploads/oparke/oparkeludi/ludi-(4).JPG" 
+            class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
+            alt="Праздник"
+          />
+        </div>
+      </div>
+
+      <!-- ВТОРАЯ ЛИНИЯ: 2 широких фото -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 h-auto md:h-[400px]">
+        <div class="relative overflow-hidden group bg-[#f4f4f4] h-[300px] md:h-full">
+          <img 
+            src="https://parkbugulma.ru/wp-content/uploads/oparke/oparkeevents/mero-(1).JPG" 
+            class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
+            alt="Гости"
+          />
+        </div>
+        <div class="relative overflow-hidden group bg-[#f4f4f4] h-[300px] md:h-full">
+          <img 
+            src="https://parkbugulma.ru/wp-content/uploads/oparke/oparkeevents/mero-(5).JPG" 
+            class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
+            alt="Панорама"
+          />
+        </div>
+      </div>
+    </section>
+
+
+  </article>
+</BaseLayout>

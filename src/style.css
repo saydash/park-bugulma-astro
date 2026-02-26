@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@theme {
+  /* Фирменные цвета Казани: минимализм */
+  --color-kz-dark: #222222;
+  --color-kz-gray: #f4f4f4;
+  --color-kz-border: #e5e5e5;
+  
+  /* Скругления у них аккуратные, не "детские" */
+  --radius-kz: 1.25rem; /* 20px */
+  
+  --font-onest: "Onest", sans-serif;
+}
+
+@layer base {
+  @font-face {
+    font-family: 'Onest';
+    font-display: swap;
+    src: url('https://fonts.gstatic.com') format('woff2');
+  }
+
+  body {
+    background-color: #ffffff;
+    @apply text-kz-dark font-onest antialiased;
+  }
+}

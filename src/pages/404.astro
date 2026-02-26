@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Страница не найдена — 404">
+  <div class="bg-white min-h-[90vh] flex flex-col items-center justify-center text-center px-6 relative overflow-hidden">
+    
+    <!-- Гигантская подложка 404 (в стиле Казани) -->
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+      <span class="text-[25vw] md:text-[35vw] font-black text-[#f4f4f4] leading-none tracking-tighter uppercase">
+        404
+      </span>
+    </div>
+
+    <!-- Контент поверх цифр -->
+    <div class="relative z-10 max-w-2xl">
+      <div class="mb-12 flex justify-center">
+        <div class="h-1 w-20 bg-teal-600"></div>
+      </div>
+      
+      <h1 class="text-5xl md:text-8xl font-black text-[#222222] tracking-tighter uppercase leading-[0.85] mb-10">
+        Страница <br/> <span class="font-light italic text-teal-600 opacity-30">потерялась</span>
+      </h1>
+      
+      <p class="text-sm md:text-base text-[#222222]/50 font-bold uppercase tracking-[0.3em] mb-16 max-w-md mx-auto leading-relaxed">
+        Возможно, это событие уже прошло или адрес был изменен.
+      </p>
+
+      <a 
+        href="/" 
+        class="inline-flex items-center px-12 py-5 border-2 border-teal-600 rounded-lg text-[13px] font-bold uppercase tracking-[0.3em] text-[#222222] hover:bg-teal-600 hover:text-white transition-all duration-500 no-underline group active:scale-95"
+      >
+        <span class="mr-4 group-hover:-translate-x-2 transition-transform duration-500">←</span>
+        Вернуться в парк
+      </a>
+    </div>
+
+    <!-- Декоративная подпись в углу (как на архитектурных чертежах) -->
+    <div class="absolute bottom-10 right-10 hidden md:block">
+      <div class="text-[10px] font-black text-[#222222]/20 uppercase tracking-[0.5em] vertical-text">
+        Error Code / Ref 404
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .vertical-text {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+  }
+</style>

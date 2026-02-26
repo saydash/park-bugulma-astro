@@ -1,0 +1,14 @@
+---
+//import posts from '../posts.json';
+import CategoryBlog from '../components/CategoryBlog.astro';
+// 1. Импортируем функцию получения данных
+import { getPosts } from '../utils.js'; 
+
+// 2. Ждем получения живых данных с сайта
+const posts = await getPosts();
+
+const CAT_ID = 907; // ID категории Информация
+const filteredPosts = posts.filter(p => p.categories.includes(CAT_ID));
+---
+
+<CategoryBlog title="Информация" posts={filteredPosts} />

@@ -1,0 +1,153 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPosts, getCleanText, getCleanContent, getFeaturedImage } from '../../utils.js';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({
+    params: { slug: decodeURIComponent(post.slug) },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const imageUrl = getFeaturedImage(post);
+---
+
+<BaseLayout title={post.title.rendered}>
+<article class="bg-white min-h-screen pb-32">
+    
+    <!-- HERO СТАТЬИ -->
+    <header class="relative h-[60vh] md:h-[75vh] w-full overflow-hidden bg-[#222222]">
+      {imageUrl && (
+        <img 
+          src={imageUrl} 
+          class="absolute inset-0 w-full h-full object-cover opacity-50 grayscale-[0.2]" 
+          alt=""
+        />
+      )}
+      <div class="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent"></div>
+      
+      <div class="relative z-10 h-full max-w-5xl mx-auto px-6 flex flex-col justify-end pb-16 items-center text-center">
+        <time class="text-[10px] font-black text-teal-400 uppercase tracking-[0.4em] mb-6">
+          {new Date(post.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+        </time>
+        
+        <!-- Адаптивный заголовок: на мобилках меньше, на десктопе огромный -->
+        <h1 
+          class="text-4xl md:text-7xl lg:text-[90px] font-black text-white tracking-tighter uppercase leading-[0.9] mb-8 max-w-4xl" 
+          set:html={post.title.rendered} 
+        />
+        
+        <div class="h-1 w-20 bg-teal-600"></div>
+      </div>
+    </header>
+
+    <!-- КОНТЕНТ -->
+    <div class="max-w-4xl mx-auto px-6 -mt-12 relative z-20">
+      <div class="bg-white p-8 md:p-20 border border-[#e5e5e5] shadow-2xl">
+        
+        <!-- ОЧИЩЕННЫЙ ВЫВОД ЧЕРЕЗ PROSE -->
+        <div class="prose prose-slate prose-lg md:prose-xl max-w-none 
+          prose-headings:text-[#222222] prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tighter
+          prose-p:text-[#222222]/80 prose-p:leading-relaxed prose-p:mb-8
+          prose-a:text-teal-600 prose-a:font-bold prose-a:no-underline hover:prose-a:border-b-2 border-teal-600
+          prose-img:rounded-sm prose-img:shadow-xl prose-img:mx-auto
+          prose-strong:text-[#222222]
+          prose-blockquote:border-l-4 prose-blockquote:border-teal-500 prose-blockquote:italic prose-blockquote:text-xl"
+        >
+          <div set:html={getCleanContent(post.content.rendered)} />
+        </div>
+
+        <!-- ПОДВАЛ СТАТЬИ -->
+        <div class="mt-24 pt-12 border-t border-[#e5e5e5] flex flex-col md:flex-row justify-between items-center gap-8">
+          <div class="text-[10px] font-black text-[#222222]/20 uppercase tracking-[0.3em]">
+            Park Bugulma / Official Post
+          </div>
+          <a href="javascript:history.back()" class="group flex items-center text-[11px] font-black text-teal-600 uppercase tracking-widest no-underline">
+            <span class="mr-4 group-hover:-translate-x-2 transition-transform">←</span> 
+            Назад к событиям
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style is:global>
+  /* Стилизуем любые изображения, которые пришли из контента WP */
+  .prose img {
+    border-radius: 12px; /* замена rounded-lg */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); /* замена shadow-md */
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    max-height: 600px;
+    display: block;
+  }
+
+  /* Если картинки обернуты в ссылки (лайтбоксы) */
+  .prose a:has(img) {
+    display: block;
+    border: none !important;
+    transition: opacity 0.3s ease;
+  }
+  
+  .prose a:has(img):hover {
+    opacity: 0.9;
+  }
+
+  /* Сетка для галерей: если картинки идут друг за другом */
+  /* Пытаемся поймать параграфы, содержащие только изображения */
+  .prose p:has(img) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+  }
+
+  .prose p:has(img) img {
+    flex: 1 1 300px; /* Позволяет картинкам вставать в ряд */
+    margin: 0;
+  }
+
+  /* Очистка мусора Visual Composer */
+  .prose div[class^="vc_"] {
+    display: contents; /* Заставляет вложенные элементы игнорировать обертку VC */
+  }
+</style>
+
+
+<script is:inline>
+  async function initGallery() {
+    const galleries = document.querySelectorAll('.wp-custom-gallery');
+    
+    for (const gallery of galleries) {
+      const ids = gallery.getAttribute('data-ids').split(',');
+      
+      // Чтобы не перегружать сервер, грузим по 1 фото
+      for (const id of ids) {
+        const target = `https://parkbugulma.ru{id.trim()}`;
+        const proxy = `https://api.allorigins.win{encodeURIComponent(target)}`;
+
+        try {
+          const res = await fetch(proxy);
+          const data = await res.json();
+          
+          if (data.source_url) {
+            const div = document.createElement('div');
+            // Стили в духе нашего нового дизайна
+            div.className = "w-full md:w-[calc(33.33%-1rem)] aspect-square overflow-hidden bg-gray-100 rounded-sm";
+            div.innerHTML = `<img src="${data.source_url}" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500" loading="lazy" />`;
+            gallery.appendChild(div);
+            gallery.classList.add('grid', 'grid-cols-2', 'md:grid-cols-3', 'gap-4');
+          }
+        } catch (e) { console.warn("Skip ID:", id); }
+      }
+    }
+  }
+  initGallery();
+</script>
+

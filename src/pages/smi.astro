@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPosts, getCleanText } from '../utils.js';
+
+const posts = await getPosts();
+
+// Фильтруем только категорию "СМИ о нас" (ID=7)
+const CAT_SMI = 7;
+const smiPosts = posts.filter(p => p.categories.includes(CAT_SMI));
+
+const pageTitle = "СМИ о нас — Публикации и репортажи";
+---
+
+<BaseLayout title={pageTitle}>
+  <div class="bg-white min-h-screen">
+    
+    <!-- ЗАГОЛОВОК СТРАНИЦЫ -->
+    <header class="max-w-7xl mx-auto px-6 pt-32 pb-16 border-b border-[#e5e5e5]">
+      <div class="flex flex-col md:flex-row justify-between items-baseline gap-8">
+        <h1 class="text-6xl md:text-[120px] font-black tracking-tighter uppercase text-[#222222] leading-[0.85]">
+          СМИ <br/> <span class="font-light italic text-teal-600 opacity-30">о нас</span>
+        </h1>
+        <div class="text-[11px] font-bold text-[#222222]/40 uppercase tracking-[0.4em] max-w-[250px] leading-relaxed">
+          Архив упоминаний парка в городских и республиканских медиа-изданиях
+        </div>
+      </div>
+    </header>
+
+    <!-- СПИСОК ПУБЛИКАЦИЙ: Газетный минимализм -->
+    <section class="max-w-5xl mx-auto px-6 py-20">
+      <div class="divide-y divide-[#e5e5e5]">
+        {smiPosts.map((post) => (
+          <article class="group">
+            <a 
+              href={`/events/${decodeURIComponent(post.slug)}`} 
+              class="flex flex-col md:flex-row md:items-baseline justify-between py-12 no-underline"
+            >
+              <div class="flex flex-col gap-4 max-w-3xl">
+                <!-- Дата с бирюзовым акцентом -->
+                <div class="flex items-center gap-4">
+                  <time class="text-[10px] font-bold text-teal-600 uppercase tracking-[0.3em]">
+                    {new Date(post.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </time>
+                  <span class="text-[9px] font-black text-[#222222]/20 uppercase tracking-widest">Публикация</span>
+                </div>
+
+                <!-- Крупный заголовок статьи -->
+                <h2 
+                  class="text-3xl md:text-5xl font-bold text-[#222222] leading-[1.1] tracking-tighter group-hover:text-teal-700 transition-colors duration-500" 
+                  set:html={post.title.rendered} 
+                />
+                
+                <!-- Короткий анонс -->
+                <p class="text-[#222222]/40 text-sm leading-relaxed font-light mt-2 max-w-xl group-hover:text-[#222222] transition-colors">
+                  {getCleanText(post.content.rendered).substring(0, 160)}...
+                </p>
+              </div>
+
+              <!-- Индикатор перехода (стрелка) -->
+              <div class="mt-8 md:mt-0 flex items-center gap-3 text-teal-600 opacity-0 -translate-x-10 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-700">
+                <span class="text-[10px] font-black uppercase tracking-widest">Читать полностью</span>
+                <svg xmlns="http://www.w3.org" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+
+      {smiPosts.length === 0 && (
+        <div class="py-40 text-center text-[#222222]/20 uppercase text-xs tracking-widest">Публикаций не найдено</div>
+      )}
+    </section>
+
+  </div>
+</BaseLayout>

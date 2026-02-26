@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPosts, getCleanText, getFeaturedImage } from '../utils.js';
+
+// 1. Получаем живые данные
+const posts = await getPosts();
+
+// 2. Фильтруем только категорию "Афиша" (ID=5 из вашего списка)
+const CAT_AFISHA = 5;
+const afishaPosts = posts.filter(p => p.categories.includes(CAT_AFISHA));
+
+const pageTitle = "Афиша событий — Парк Бугульма";
+---
+
+<BaseLayout title={pageTitle}>
+  <div class="bg-white min-h-screen">
+    
+    <!-- HEADER СТРАНИЦЫ: Масштабный и строгий -->
+    <section class="max-w-7xl mx-auto px-6 pt-32 pb-16 border-b border-[#e5e5e5]">
+      <div class="flex flex-col md:flex-row justify-between items-baseline gap-8">
+        <h1 class="text-6xl md:text-[120px] font-black tracking-tighter uppercase text-[#222222] leading-[0.85]">
+          Афиша <br/> <span class="font-light italic text-teal-600 opacity-30">событий</span>
+        </h1>
+        <div class="text-[11px] font-bold text-[#222222]/40 uppercase tracking-[0.4em] max-w-[200px] leading-relaxed">
+          Актуальная программа мероприятий в парках и скверах города
+        </div>
+      </div>
+    </section>
+
+ <!-- СЕТКА СОБЫТИЙ: Свободная раскладка с отступами -->
+    <section class="max-w-7xl mx-auto px-6 py-24">
+      <!-- Увеличили gap до 8 (32px) и убрали фоновую заливку разделителей -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {afishaPosts.map((post) => (
+          <a 
+            href={`/events/${decodeURIComponent(post.slug)}`} 
+            class="group block no-underline bg-white rounded-[20px] overflow-hidden border border-[#e5e5e5] hover:border-teal-600/30 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1"
+          >
+            <!-- Блок изображения (теперь с внутренним скруглением) -->
+            <div class="relative aspect-[4/5] overflow-hidden">
+              {getFeaturedImage(post) ? (
+                <img 
+                  src={getFeaturedImage(post)} 
+                  alt={post.title.rendered}
+                  class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                />
+              ) : (
+                <div class="w-full h-full bg-[#f4f4f4] flex items-center justify-center text-[10px] text-slate-300 uppercase tracking-widest font-bold">Нет фото</div>
+              )}
+              
+              <!-- Градиент стал мягче -->
+              <div class="absolute inset-0 bg-gradient-to-t from-[#222222]/80 via-transparent to-transparent opacity-60 group-hover:opacity-100 transition-opacity"></div>
+              
+              <!-- Дата на фоне фото -->
+              <div class="absolute top-6 left-6">
+                <span class="bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-[10px] font-bold text-[#222222] uppercase tracking-widest shadow-sm">
+                   {new Date(post.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}
+                </span>
+              </div>
+            </div>
+
+            <!-- Текстовый блок под фото или на фото (выбрали под фото для чистоты) -->
+            <div class="p-8">
+              <div class="flex items-center gap-2 mb-4">
+                <div class="h-px w-6 bg-teal-500"></div>
+                <span class="text-[10px] font-bold text-teal-600 uppercase tracking-widest">Анонс</span>
+              </div>
+              
+              <h2 class="text-2xl font-bold text-[#222222] leading-tight group-hover:text-teal-700 transition-colors duration-300 min-h-[3.5rem]" set:html={post.title.rendered} />
+              
+              <p class="text-[#222222]/50 text-sm mt-4 line-clamp-2 leading-relaxed font-light">
+                {getCleanText(post.content.rendered).substring(0, 100)}...
+              </p>
+            </div>
+          </a>
+        ))}
+      </div>
+
+  </div>
+</BaseLayout>
