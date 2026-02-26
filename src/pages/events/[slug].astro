@@ -1,7 +1,12 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getPosts, getCleanText, getCleanContent, getFeaturedImage } from '../../utils.js';
-import 'photoswipe/style.css';
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  getPosts,
+  getCleanText,
+  getCleanContent,
+  getFeaturedImage,
+} from "../../utils.js";
+import "photoswipe/style.css";
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -16,57 +21,96 @@ const imageUrl = getFeaturedImage(post);
 ---
 
 <BaseLayout title={post.title.rendered}>
-<article class="bg-white min-h-screen pb-32">
-    
+  <article class="bg-white min-h-screen pb-32">
     <!-- HERO СТАТЬИ -->
-    <header class="relative h-[60vh] md:h-[75vh] w-full overflow-hidden bg-[#222222]">
-      {imageUrl && (
-        <img 
-          src={imageUrl} 
-          class="absolute inset-0 w-full h-full object-cover opacity-50 grayscale-[0.2]" 
-          alt=""
-        />
-      )}
-      <div class="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent"></div>
-      
-      <div class="relative z-10 h-full max-w-5xl mx-auto px-6 flex flex-col justify-end pb-16 items-center text-center">
-        <time class="text-[10px] font-black text-teal-400 uppercase tracking-[0.4em] mb-6">
-          {new Date(post.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+    <header
+      class="relative h-[60vh] md:h-[75vh] w-full overflow-hidden bg-[#222222]"
+    >
+      {
+        imageUrl && (
+          <img
+            src={imageUrl}
+            class="absolute inset-0 w-full h-full object-cover opacity-50 grayscale-[0.2]"
+            alt=""
+          />
+        )
+      }
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent"
+      >
+      </div>
+
+      <div
+        class="relative z-10 h-full max-w-5xl mx-auto px-6 flex flex-col justify-end pb-16 items-center text-center"
+      >
+        <time
+          class="text-[10px] font-black text-teal-400 uppercase tracking-[0.4em] mb-6"
+        >
+          {
+            new Date(post.date).toLocaleDateString("ru-RU", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })
+          }
         </time>
-        
+
         <!-- Адаптивный заголовок: на мобилках меньше, на десктопе огромный -->
-        <h1 
-          class="text-4xl md:text-7xl lg:text-[90px] font-black text-white tracking-tighter uppercase leading-[0.9] mb-8 max-w-4xl" 
-          set:html={post.title.rendered} 
+        <h1
+          class="text-4xl md:text-7xl lg:text-[90px] font-black text-white tracking-tighter uppercase leading-[0.9] mb-8 max-w-4xl"
+          set:html={post.title.rendered}
         />
-        
+
         <div class="h-1 w-20 bg-teal-600"></div>
       </div>
     </header>
 
     <!-- КОНТЕНТ -->
-    <div class="max-w-4xl mx-auto px-6 -mt-12 relative z-20">
-      <div class="bg-white p-8 md:p-20 border border-[#e5e5e5] shadow-2xl">
-        
-        <!-- ОЧИЩЕННЫЙ ВЫВОД ЧЕРЕЗ PROSE -->
-        <div class="prose prose-slate prose-lg md:prose-xl max-w-none 
-          prose-headings:text-[#222222] prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tighter
-          prose-p:text-[#222222]/80 prose-p:leading-relaxed prose-p:mb-8
-          prose-a:text-teal-600 prose-a:font-bold prose-a:no-underline hover:prose-a:border-b-2 border-teal-600
-          prose-img:rounded-sm prose-img:shadow-xl prose-img:mx-auto
-          prose-strong:text-[#222222]
-          prose-blockquote:border-l-4 prose-blockquote:border-teal-500 prose-blockquote:italic prose-blockquote:text-xl"
-        >
-          <div set:html={getCleanContent(post.content.rendered)} />
+    <div class="max-w-7xl mx-auto px-6 -mt-12 relative z-20">
+      <div class="bg-white border border-[#e5e5e5] shadow-2xl">
+        <!-- 1. КОНТЕЙНЕР ДЛЯ ТЕКСТА (Узкий) -->
+        <div class="max-w-3xl mx-auto px-6 md:px-16 pt-16 pb-8">
+          <div
+            id="text-content"
+            class="prose prose-slate prose-lg max-w-none
+        prose-p:text-[#222222]/80 prose-p:leading-relaxed"
+          >
+            <div set:html={getCleanContent(post.content.rendered)} />
+          </div>
+        </div>
+
+        <!-- 2. КОНТЕЙНЕР ДЛЯ ГАЛЕРЕИ (Широкий) -->
+        <div id="gallery-container" class="px-6 md:px-16 pb-20 hidden">
+          <div class="h-px w-full bg-[#e5e5e5] mb-16"></div>
+          <h3
+            class="text-[10px] font-black uppercase tracking-[0.4em] text-[#222222]/30 mb-10 text-center"
+          >
+            Фотоотчет события
+          </h3>
+          <div
+            id="dynamic-gallery"
+            class="grid grid-cols-2 md:grid-cols-4 gap-4"
+          >
+            <!-- Сюда переедут фото из текста -->
+          </div>
         </div>
 
         <!-- ПОДВАЛ СТАТЬИ -->
-        <div class="mt-24 pt-12 border-t border-[#e5e5e5] flex flex-col md:flex-row justify-between items-center gap-8">
-          <div class="text-[10px] font-black text-[#222222]/20 uppercase tracking-[0.3em]">
+        <div
+          class="mt-24 pt-12 border-t border-[#e5e5e5] flex flex-col md:flex-row justify-between items-center gap-8"
+        >
+          <div
+            class="text-[10px] font-black text-[#222222]/20 uppercase tracking-[0.3em]"
+          >
             Park Bugulma / Official Post
           </div>
-          <a href="javascript:history.back()" class="group flex items-center text-[11px] font-black text-teal-600 uppercase tracking-widest no-underline">
-            <span class="mr-4 group-hover:-translate-x-2 transition-transform">←</span> 
+          <a
+            href="javascript:history.back()"
+            class="group flex items-center text-[11px] font-black text-teal-600 uppercase tracking-widest no-underline"
+          >
+            <span class="mr-4 group-hover:-translate-x-2 transition-transform"
+              >←</span
+            >
             Назад к событиям
           </a>
         </div>
@@ -78,14 +122,17 @@ const imageUrl = getFeaturedImage(post);
 <!-- 1. СТИЛИ ГАЛЕРЕИ (вставляем прямо перед контентом) -->
 <style is:global>
   /* Фикс для сетки, чтобы она не развалилась */
-  .prose .gallery, .prose .wp-block-gallery {
+  .prose .gallery,
+  .prose .wp-block-gallery {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
     margin: 3rem 0 !important;
   }
   @media (min-width: 768px) {
-    .prose .gallery { grid-template-columns: repeat(3, 1fr) !important; }
+    .prose .gallery {
+      grid-template-columns: repeat(3, 1fr) !important;
+    }
   }
   .pswp-gallery-item img {
     width: 100%;
@@ -95,9 +142,11 @@ const imageUrl = getFeaturedImage(post);
     cursor: zoom-in;
     transition: transform 0.3s ease;
   }
-  .pswp-gallery-item:hover img { transform: scale(1.03); }
-    /* Выносим галерею за пределы узкого текстового блока */
-  .prose .gallery, 
+  .pswp-gallery-item:hover img {
+    transform: scale(1.03);
+  }
+  /* Выносим галерею за пределы узкого текстового блока */
+  .prose .gallery,
   .prose .wp-block-gallery,
   .wp-custom-gallery {
     display: grid !important;
@@ -105,7 +154,7 @@ const imageUrl = getFeaturedImage(post);
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 16px !important;
     margin: 4rem 0 !important;
-    
+
     /* Магия выноса: расширяем блок относительно узкого родителя */
     width: 100vw !important;
     max-width: 1200px !important; /* Ширина на 4 колонки */
@@ -148,62 +197,64 @@ const imageUrl = getFeaturedImage(post);
   }
 </style>
 
-
 <!-- 2. Скрипт-оживитель -->
 <script>
   import PhotoSwipeLightbox from 'photoswipe/lightbox';
   import PhotoSwipe from 'photoswipe';
 
-  async function initPhotoSwipe() {
-    const images = document.querySelectorAll('.prose img, .wp-custom-gallery img');
-    if (!images.length) return;
-
-    // 1. Подготовка ссылок
-    const promises = Array.from(images).map((img) => {
-      return new Promise((resolve) => {
-        if (img.closest('a')) return resolve();
-
-        const fullUrl = img.src.replace(/-[0-9]+x[0-9]+(?=\.[a-z]+$)/i, '');
-        const link = document.createElement('a');
-        link.href = fullUrl;
-        link.className = 'pswp-gallery-item block overflow-hidden rounded-lg';
-        
-        // Создаем временный объект изображения, чтобы узнать реальные размеры
-        const tempImg = new Image();
-        tempImg.src = fullUrl;
-        tempImg.onload = () => {
-          link.dataset.pswpWidth = tempImg.width;
-          link.dataset.pswpHeight = tempImg.height;
+  async function moveAndInitGallery() {
+    const textBlock = document.getElementById('text-content');
+    const galleryGrid = document.getElementById('dynamic-gallery');
+    const galleryContainer = document.getElementById('gallery-container');
+    
+    // Находим все картинки внутри старых галерей WP
+    const wpImages = textBlock.querySelectorAll('.gallery img, .wp-block-gallery img, .gallery-item img');
+    
+    if (wpImages.length > 0) {
+      galleryContainer.classList.remove('hidden'); // Показываем широкий блок
+      
+      const promises = Array.from(wpImages).map((img) => {
+        return new Promise((resolve) => {
+          const fullUrl = img.src.replace(/-[0-9]+x[0-9]+(?=\.[a-z]+$)/i, '');
           
-          img.parentNode.insertBefore(link, img);
-          link.appendChild(img);
-          resolve();
-        };
-        tempImg.onerror = () => resolve(); // Игнорируем битые ссылки
+          // Создаем элемент для новой широкой сетки
+          const link = document.createElement('a');
+          link.href = fullUrl;
+          link.className = 'pswp-gallery-item block overflow-hidden rounded-lg aspect-square bg-slate-50';
+          
+          const tempImg = new Image();
+          tempImg.src = fullUrl;
+          tempImg.onload = () => {
+            link.dataset.pswpWidth = tempImg.width;
+            link.dataset.pswpHeight = tempImg.height;
+            link.innerHTML = `<img src="${fullUrl}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />`;
+            
+            galleryGrid.appendChild(link);
+            
+            // Удаляем картинку из текста, чтобы она не дублировалась
+            const parentToRemove = img.closest('.gallery') || img.closest('.wp-block-gallery') || img;
+            if (parentToRemove && parentToRemove.parentNode) {
+                // Если это одиночная картинка — удаляем её, если галерея — она удалится после цикла
+            }
+            resolve();
+          };
+        });
       });
-    });
 
-    // Ждем, пока все размеры будут получены
-    await Promise.all(promises);
+      await Promise.all(promises);
+      
+      // Удаляем пустые обертки галерей из текста
+      textBlock.querySelectorAll('.gallery, .wp-block-gallery').forEach(el => el.remove());
+    }
 
-    // 2. Инициализация лайтбокса ПОСЛЕ того, как все размеры известны
+    // Инициализация PhotoSwipe
     const lightbox = new PhotoSwipeLightbox({
-      gallery: '.prose',
+      gallery: '#dynamic-gallery',
       children: 'a.pswp-gallery-item',
-      pswpModule: PhotoSwipe,
-      // Настройки для идеального отображения
-      initialZoomLevel: 'fit',
-      secondaryZoomLevel: 1.5,
-      maxZoomLevel: 4,
-      bgOpacity: 0.9,
+      pswpModule: PhotoSwipe
     });
-
     lightbox.init();
   }
 
-  // Запуск: ждем загрузки JSON и отрисовки DOM
-  window.addEventListener('load', () => {
-    setTimeout(initPhotoSwipe, 1000);
-  });
+  window.addEventListener('load', moveAndInitGallery);
 </script>
-
