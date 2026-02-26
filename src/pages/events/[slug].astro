@@ -104,11 +104,9 @@ const imageUrl = getFeaturedImage(post);
   import PhotoSwipeLightbox from 'photoswipe/lightbox';
 
   function initPhotoSwipe() {
-    // 1. Находим все изображения в контенте WordPress
-    const images = document.querySelectorAll('.prose .gallery img, .prose .wp-block-gallery img, .prose .gallery-item img');
+    const images = document.querySelectorAll('.prose img, .wp-custom-gallery img');
     
     images.forEach((img) => {
-      // 2. Если картинка еще не обернута, оборачиваем её в ссылку для PhotoSwipe
       if (!img.closest('a')) {
         const link = document.createElement('a');
         const fullUrl = img.src.replace(/-[0-9]+x[0-9]+(?=\.[a-z]+$)/i, '');
@@ -116,28 +114,43 @@ const imageUrl = getFeaturedImage(post);
         link.href = fullUrl;
         link.className = 'pswp-gallery-item block overflow-hidden rounded-lg';
         
-        // PhotoSwipe нужны данные о размере, но он умеет их угадывать
-        // Для начала поставим заглушку, он обновит её при клике
-        link.dataset.pswpWidth = '1600';
-        link.dataset.pswpHeight = '1067';
+        // УДАЛЯЕМ ЖЕСТКИЕ РАЗМЕРЫ (они ломали пропорции)
+        // link.dataset.pswpWidth = '1600'; <-- Это убираем
         
         img.parentNode.insertBefore(link, img);
         link.appendChild(img);
       }
     });
 
-    // 3. Инициализируем лайтбокс
     const lightbox = new PhotoSwipeLightbox({
-      gallery: '.prose', // Ищем внутри контента статьи
+      gallery: '.prose',
       children: 'a.pswp-gallery-item',
-      pswpModule: () => import('photoswipe')
+      pswpModule: () => import('photoswipe'),
+      // ДОБАВЛЯЕМ АВТОВЫЧИСЛЕНИЕ РАЗМЕРОВ
+      allowPanToNext: true,
+      initialZoomLevel: 'fit',
+      secondaryZoomLevel: 2,
+      maxZoomLevel: 4,
+    });
+
+    // Этот хук заставляет PhotoSwipe узнать реальный размер картинки перед показом
+    lightbox.on('contentLoad', (e) => {
+        const { content } = e;
+        if (content.type === 'image') {
+            const img = new Image();
+            img.src = content.data.src;
+            img.onload = () => {
+                content.width = img.width;
+                content.height = img.height;
+                lightbox.pswp.refreshSlideContent(content.index);
+            };
+        }
     });
     
     lightbox.init();
   }
 
-  // Запуск: ждем загрузки данных из вашего JSON
   window.addEventListener('load', () => {
-    setTimeout(initPhotoSwipe, 1000); // Даем время на отрисовку сетки
+    setTimeout(initPhotoSwipe, 1000);
   });
 </script>
