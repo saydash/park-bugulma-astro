@@ -1,11 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import {
-  getPosts,
-  getCleanText,
-  getCleanContent,
-  getFeaturedImage,
-} from "../../utils.js";
+import { getPosts, getCleanContent, getFeaturedImage } from "../../utils.js";
 import "photoswipe/style.css";
 
 export async function getStaticPaths() {
@@ -18,73 +13,56 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const imageUrl = getFeaturedImage(post);
+const pageTitle = post.title.rendered.replace(/<\/?[^>]+(>|$)/g, "");
 ---
 
-<BaseLayout title={post.title.rendered}>
+<BaseLayout title={pageTitle}>
   <article class="bg-white min-h-screen pb-32">
-    <!-- ВЕРХНИЙ БЛОК (HERO СТАТЬИ) -->
-<header class="relative h-[70vh] w-full overflow-hidden bg-[#222222] not-prose">
-  <!-- СТРОГО ДЛЯ СТРАНИЦЫ ЗАПИСИ -->
-{imageUrl && (
-  <img 
-    src={imageUrl} 
-    class="absolute inset-0 w-full h-full object-cover object-center opacity-60 grayscale-[0.2]" 
-    style="min-height: 100%; min-width: 100%; object-fit: cover !important; transform: none !important; aspect-ratio: auto !important;"
-    alt=""
-  />
-)}
-  <div class="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent"></div>
-  
-  <!-- ... остальной контент заголовка ... -->
-</header>
+    
+    <!-- ВЕРХНИЙ БЛОК (HERO) -->
+    <header class="relative h-[60vh] md:h-[75vh] w-full overflow-hidden bg-[#222222] flex items-center justify-center text-center">
+      {imageUrl && (
+        <img 
+          src={imageUrl} 
+          class="hero-main-img absolute inset-0 w-full h-full object-cover opacity-50 grayscale-[0.2]" 
+          alt=""
+        />
+      )}
+      <div class="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent"></div>
+      
+      <!-- КОНТЕНТ ЗАГОЛОВКА (ТЕПЕРЬ НА МЕСТЕ) -->
+      <div class="relative z-20 max-w-5xl mx-auto px-6">
+        <time class="text-[10px] font-black text-teal-400 uppercase tracking-[0.4em] mb-6 block">
+          {new Date(post.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+        </time>
+        <h1 class="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase leading-[0.9] mb-8" set:html={post.title.rendered} />
+        <div class="h-1 w-20 bg-teal-600 mx-auto"></div>
+      </div>
+    </header>
 
-    <!-- КОНТЕНТ -->
-    <div class="max-w-7xl mx-auto px-6 -mt-12 relative z-20">
-      <div class="bg-white border border-[#e5e5e5] shadow-2xl">
-        <!-- 1. КОНТЕЙНЕР ДЛЯ ТЕКСТА (Узкий) -->
+    <!-- КОНТЕНТ СТАТЬИ -->
+    <div class="max-w-7xl mx-auto px-6 -mt-12 relative z-30">
+      <div class="bg-white border border-[#e5e5e5] shadow-2xl rounded-sm overflow-hidden">
+        
+        <!-- ТЕКСТ (Узкий) -->
         <div class="max-w-3xl mx-auto px-6 md:px-16 pt-16 pb-8">
-          <div
-            id="text-content"
-            class="prose prose-slate prose-lg max-w-none
-        prose-p:text-[#222222]/80 prose-p:leading-relaxed"
-          >
+          <div id="text-content" class="prose prose-slate prose-lg max-w-none prose-p:text-[#222222]/80 prose-p:leading-relaxed">
             <div set:html={getCleanContent(post.content.rendered)} />
           </div>
         </div>
 
-        <!-- 2. КОНТЕЙНЕР ДЛЯ ГАЛЕРЕИ (Широкий) -->
+        <!-- ГАЛЕРЕЯ (Широкая) -->
         <div id="gallery-container" class="px-6 md:px-16 pb-20 hidden">
           <div class="h-px w-full bg-[#e5e5e5] mb-16"></div>
-          <h3
-            class="text-[10px] font-black uppercase tracking-[0.4em] text-[#222222]/30 mb-10 text-center"
-          >
-            Фотоотчет события
-          </h3>
-          <div
-            id="dynamic-gallery"
-            class="grid grid-cols-2 md:grid-cols-4 gap-4"
-          >
-            <!-- Сюда переедут фото из текста -->
-          </div>
+          <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-[#222222]/30 mb-10 text-center">Фотоотчет события</h3>
+          <div id="dynamic-gallery" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
         </div>
 
-        <!-- ПОДВАЛ СТАТЬИ -->
-        <div
-          class="mt-24 pt-12 border-t border-[#e5e5e5] flex flex-col md:flex-row justify-between items-center gap-8"
-        >
-          <div
-            class="text-[10px] font-black text-[#222222]/20 uppercase tracking-[0.3em]"
-          >
-            Park Bugulma / Official Post
-          </div>
-          <a
-            href="javascript:history.back()"
-            class="group flex items-center text-[11px] font-black text-teal-600 uppercase tracking-widest no-underline"
-          >
-            <span class="mr-4 group-hover:-translate-x-2 transition-transform"
-              >←</span
-            >
-            Назад к событиям
+        <!-- ПОДВАЛ -->
+        <div class="mt-12 py-12 border-t border-[#e5e5e5] flex flex-col md:flex-row justify-between items-center gap-8 px-16 bg-[#fafafa]">
+          <div class="text-[10px] font-black text-[#222222]/20 uppercase tracking-[0.3em]">Park Bugulma / Official Post</div>
+          <a href="javascript:history.back()" class="group flex items-center text-[11px] font-black text-teal-600 uppercase tracking-widest no-underline">
+            <span class="mr-4 group-hover:-translate-x-2 transition-transform">←</span> Назад к событиям
           </a>
         </div>
       </div>
@@ -92,69 +70,33 @@ const imageUrl = getFeaturedImage(post);
   </article>
 </BaseLayout>
 
-<!-- 1. СТИЛИ ГАЛЕРЕИ (вставляем прямо перед контентом) -->
 <style is:global>
-  /* 1. ВОЗВРАЩАЕМ ЗАГОЛОВОК И МАСШТАБ HERO (Изолируем от контента) */
-  header.not-prose {
-    display: flex !important; /* Гарантируем видимость */
-    height: 70vh !important;
-    min-height: 450px !important;
-    position: relative !important;
-    overflow: hidden !important;
-  }
-
-  header.not-prose img {
-    position: absolute !important;
-    inset: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    object-position: center !important;
-    transform: none !important; /* Убираем случайные масштабы */
+  /* СТРОГИЙ СБРОС ДЛЯ HERO ИЗОБРАЖЕНИЯ */
+  .hero-main-img {
     aspect-ratio: auto !important;
-    opacity: 0.6 !important; /* Возвращаем приглушение для читаемости текста */
-    filter: grayscale(0.2) !important;
+    transform: none !important;
+    height: 100% !important;
+    width: 100% !important;
+    object-fit: cover !important;
+    max-height: none !important;
+    filter: grayscale(0.2) brightness(0.7) !important;
   }
 
-  /* 2. ВОЗВРАЩАЕМ ТЕКСТ ЗАГОЛОВКА */
-  header.not-prose h1 {
+  /* СТИЛИ ДЛЯ КВАДРАТНОЙ СЕТКИ ГАЛЕРЕИ */
+  #dynamic-gallery .pswp-gallery-item {
+    aspect-ratio: 1/1 !important; /* Здесь квадраты уместны */
     display: block !important;
-    visibility: visible !important;
-    color: white !important;
-    z-index: 20 !important;
-  }
-
-  /* 3. СТИЛИ ТОЛЬКО ДЛЯ СЕТКИ ГАЛЕРЕИ (Никаких общих img!) */
-  #dynamic-gallery {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 16px !important;
-    margin: 4rem 0 !important;
-  }
-
-  @media (min-width: 768px) {
-    #dynamic-gallery {
-      grid-template-columns: repeat(4, 1fr) !important;
-    }
-  }
-
-  .pswp-gallery-item {
-    aspect-ratio: 1/1 !important;
     overflow: hidden !important;
-    display: block !important;
     border-radius: 4px !important;
   }
-
-  .pswp-gallery-item img {
+  #dynamic-gallery .pswp-gallery-item img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
     margin: 0 !important;
-    transform: none !important;
   }
 </style>
 
-<!-- 2. Скрипт-оживитель -->
 <script>
   import PhotoSwipeLightbox from 'photoswipe/lightbox';
   import PhotoSwipe from 'photoswipe';
@@ -163,21 +105,16 @@ const imageUrl = getFeaturedImage(post);
     const textBlock = document.getElementById('text-content');
     const galleryGrid = document.getElementById('dynamic-gallery');
     const galleryContainer = document.getElementById('gallery-container');
-    
-    // Находим все картинки внутри старых галерей WP
     const wpImages = textBlock.querySelectorAll('.gallery img, .wp-block-gallery img, .gallery-item img');
     
     if (wpImages.length > 0) {
-      galleryContainer.classList.remove('hidden'); // Показываем широкий блок
-      
+      galleryContainer.classList.remove('hidden');
       const promises = Array.from(wpImages).map((img) => {
         return new Promise((resolve) => {
           const fullUrl = img.src.replace(/-[0-9]+x[0-9]+(?=\.[a-z]+$)/i, '');
-          
-          // Создаем элемент для новой широкой сетки
           const link = document.createElement('a');
           link.href = fullUrl;
-          link.className = 'pswp-gallery-item block overflow-hidden rounded-lg aspect-square bg-slate-50';
+          link.className = 'pswp-gallery-item';
           
           const tempImg = new Image();
           tempImg.src = fullUrl;
@@ -185,26 +122,16 @@ const imageUrl = getFeaturedImage(post);
             link.dataset.pswpWidth = tempImg.width;
             link.dataset.pswpHeight = tempImg.height;
             link.innerHTML = `<img src="${fullUrl}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />`;
-            
             galleryGrid.appendChild(link);
-            
-            // Удаляем картинку из текста, чтобы она не дублировалась
-            const parentToRemove = img.closest('.gallery') || img.closest('.wp-block-gallery') || img;
-            if (parentToRemove && parentToRemove.parentNode) {
-                // Если это одиночная картинка — удаляем её, если галерея — она удалится после цикла
-            }
             resolve();
           };
+          tempImg.onerror = () => resolve();
         });
       });
-
       await Promise.all(promises);
-      
-      // Удаляем пустые обертки галерей из текста
       textBlock.querySelectorAll('.gallery, .wp-block-gallery').forEach(el => el.remove());
     }
 
-    // Инициализация PhotoSwipe
     const lightbox = new PhotoSwipeLightbox({
       gallery: '#dynamic-gallery',
       children: 'a.pswp-gallery-item',
@@ -212,6 +139,5 @@ const imageUrl = getFeaturedImage(post);
     });
     lightbox.init();
   }
-
   window.addEventListener('load', moveAndInitGallery);
 </script>
