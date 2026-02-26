@@ -104,6 +104,7 @@ const imageUrl = getFeaturedImage(post);
   import PhotoSwipeLightbox from 'photoswipe/lightbox';
 
   function initPhotoSwipe() {
+    // 1. Находим все изображения
     const images = document.querySelectorAll('.prose img, .wp-custom-gallery img');
     
     images.forEach((img) => {
@@ -112,12 +113,9 @@ const imageUrl = getFeaturedImage(post);
         const fullUrl = img.src.replace(/-[0-9]+x[0-9]+(?=\.[a-z]+$)/i, '');
         
         link.href = fullUrl;
-        link.className = 'pswp-gallery-item';
+        link.className = 'pswp-gallery-item block overflow-hidden rounded-lg';
         
-        // Указываем нулевые размеры, чтобы PhotoSwipe понял, что их нужно вычислить
-        link.dataset.pswpWidth = '0';
-        link.dataset.pswpHeight = '0';
-        
+        // ВАЖНО: Не задаем размеры вообще. PhotoSwipe сам их вычислит при загрузке.
         img.parentNode.insertBefore(link, img);
         link.appendChild(img);
       }
@@ -127,36 +125,35 @@ const imageUrl = getFeaturedImage(post);
       gallery: '.prose',
       children: 'a.pswp-gallery-item',
       pswpModule: () => import('photoswipe'),
-      // Настройки отображения
-      showHideAnimationType: 'zoom',
-      imageClickAction: 'zoom',
-      bgOpacity: 0.9,
+      // Эти настройки гарантируют, что фото впишется в экран без искажений
+      initialZoomLevel: 'fit',
+      secondaryZoomLevel: 1.5,
+      maxZoomLevel: 3,
     });
 
-    // ГЛАВНЫЙ ФИКС: Динамическое определение размеров для ВСЕХ фото при листании
-    lightbox.addFilter('itemData', (itemData, index) => {
-      const img = new Image();
-      img.src = itemData.src;
-      
-      img.onload = () => {
-        if (itemData.width === 0 || itemData.height === 0) {
-          itemData.width = img.width;
-          itemData.height = img.height;
-          // Обновляем текущий слайд, если он уже открыт
+    // 2. ГЛАВНЫЙ ХУК: Вычисление размеров для каждого слайда перед показом
+    lightbox.on('contentLoad', (e) => {
+      const { content } = e;
+      if (content.type === 'image' && (!content.width || !content.height)) {
+        const dummyImg = new Image();
+        dummyImg.src = content.data.src;
+        dummyImg.onload = () => {
+          content.width = dummyImg.width;
+          content.height = dummyImg.height;
+          // Перерисовываем текущий слайд с верными пропорциями
           if (lightbox.pswp) {
-            lightbox.pswp.refreshSlideContent(index);
+            lightbox.pswp.refreshSlideContent(content.index);
           }
-        }
-      };
-      return itemData;
+        };
+      }
     });
 
     lightbox.init();
   }
 
-  // Запуск с небольшой задержкой, чтобы DOM успел прогрузиться из JSON
+  // Запуск: ждем, пока JSON отрисует контент
   window.addEventListener('load', () => {
-    setTimeout(initPhotoSwipe, 1000);
+    setTimeout(initPhotoSwipe, 1500);
   });
 </script>
 
