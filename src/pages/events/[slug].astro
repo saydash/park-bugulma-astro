@@ -75,97 +75,81 @@ const imageUrl = getFeaturedImage(post);
 </BaseLayout>
 
 <style is:global>
-  /* Умная сетка галереи (Masonry-стиль) */
+  /* Жесткая фиксация сетки для динамических галерей */
   .wp-custom-gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    grid-auto-rows: 300px;
-    grid-auto-flow: dense; /* Заполняет пустые места */
-    gap: 12px;
-    margin: 4rem 0;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* 2 колонки на мобилках */
+    gap: 12px !important;
+    margin: 3rem 0 !important;
+  }
+
+  /* На десктопе делаем 3 колонки и интересную раскладку */
+  @media (min-width: 768px) {
+    .wp-custom-gallery {
+      grid-template-columns: repeat(3, 1fr) !important;
+    }
+    
+    /* Каждое 4-е фото делаем широким для "интересной" сетки */
+    .gallery-item:nth-child(4n) {
+      grid-column: span 2;
+    }
   }
 
   .gallery-item {
+    display: block;
     position: relative;
+    aspect-ratio: 3/2; /* Все фото в одном формате */
     overflow: hidden;
     background: #f4f4f4;
-    cursor: pointer;
-  }
-
-  /* Делаем каждое третье фото широким для интереса */
-  .gallery-item:nth-child(3n) {
-    grid-column: span 2;
+    border-radius: 4px;
   }
 
   .gallery-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.6s ease;
   }
 
   .gallery-item:hover img {
-    transform: scale(1.08);
-  }
-
-  /* Эффект при наведении (бирюзовая вуаль) */
-  .gallery-item::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: #14b8a6; /* teal-600 */
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-
-  .gallery-item:hover::after {
-    opacity: 0.1;
+    transform: scale(1.05);
   }
 </style>
 
 
 
+<script is:inline src="https://cdnjs.cloudflare.com"></script>
+
 <script is:inline>
-  async function loadAdvancedGallery() {
+  async function initGallery() {
     const galleries = document.querySelectorAll('.wp-custom-gallery');
     
     for (const gallery of galleries) {
       const ids = gallery.getAttribute('data-ids').split(',');
       
       for (const id of ids) {
-        const targetUrl = `https://parkbugulma.ru{id.trim()}`;
-        // Используем прокси, так как хостинг может блокировать прямые запросы
-        const proxyUrl = `https://api.allorigins.win{encodeURIComponent(targetUrl)}`;
+        // Прокси для обхода блокировок хостинга
+        const target = `https://parkbugulma.ru{id.trim()}`;
+        const proxy = `https://api.allorigins.win{encodeURIComponent(target)}`;
 
         try {
-          const response = await fetch(proxyUrl);
-          const media = await response.json();
+          const res = await fetch(proxy);
+          const data = await res.json();
           
-          if (media.source_url) {
-            const link = document.createElement('a');
-            link.setAttribute('data-fslightbox', 'gallery'); // Группируем фото для пролистывания
-            link.setAttribute('href', media.source_url);
-            link.className = 'gallery-item block';
-            
-            link.innerHTML = `
-              <img src="${media.source_url}" 
-                   alt="Фото события" 
-                   loading="lazy" />
-            `;
-            
-            gallery.appendChild(link);
+          if (data.source_url) {
+            const a = document.createElement('a');
+            a.className = 'gallery-item';
+            a.setAttribute('data-fslightbox', 'gallery-main');
+            a.setAttribute('href', data.source_url);
+            a.innerHTML = `<img src="${data.source_url}" loading="lazy" />`;
+            gallery.appendChild(a);
           }
-        } catch (e) {
-          console.error("Ошибка ID:", id);
-        }
+        } catch (e) { console.warn("Media error:", id); }
       }
     }
-    // Переинициализируем лайтбокс после добавления новых элементов
-    if (typeof refreshFsLightbox === 'function') {
-      refreshFsLightbox();
-    }
+    // Оживляем лайтбокс после загрузки всех фото
+    if (window.refreshFsLightbox) refreshFsLightbox();
   }
-
-  loadAdvancedGallery();
+  initGallery();
 </script>
 
