@@ -1,7 +1,18 @@
 @import "tailwindcss";
 
-/* СЕТКА ГАЛЕРЕИ (Используем специфичный класс, чтобы не ломать всё остальное) */
-.wp-custom-gallery, #dynamic-gallery {
+/* 1. БЕЗОПАСНЫЙ СБРОС ДЛЯ ВСЕХ ИЗОБРАЖЕНИЙ ПОРТАЛА */
+/* Это вернет масштаб Hero на главной и во всех статьях */
+img {
+  max-width: 100%;
+  height: auto;
+  /* Убираем любые принудительные пропорции, которые могли прилететь ранее */
+  aspect-ratio: auto !important; 
+  object-fit: cover;
+}
+
+/* 2. СЕТКА ФОТООТЧЕТА (Изолирована по ID) */
+/* Эти стили работают ТОЛЬКО внутри блока галереи внизу статьи */
+#dynamic-gallery {
   display: grid !important;
   grid-template-columns: repeat(2, 1fr) !important;
   gap: 12px !important;
@@ -10,20 +21,43 @@
 }
 
 @media (min-width: 768px) {
-  .wp-custom-gallery, #dynamic-gallery {
+  #dynamic-gallery {
     grid-template-columns: repeat(4, 1fr) !important;
   }
 }
 
-/* Настройки PhotoSwipe */
-.pswp__button--arrow--prev, .pswp__button--arrow--next {
+/* Стили превью в галерее: квадраты разрешены ТОЛЬКО здесь */
+#dynamic-gallery .pswp-gallery-item {
+  aspect-ratio: 1/1 !important;
+  display: block !important;
+  overflow: hidden !important;
+  border-radius: 4px !important;
+  margin: 0 !important;
+}
+
+#dynamic-gallery .pswp-gallery-item img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  transform: none !important;
+}
+
+/* 3. НАСТРОЙКИ ПРОСМОТРА (PhotoSwipe) */
+.pswp__button--arrow--prev, 
+.pswp__button--arrow--next {
   display: block !important;
 }
+
 .pswp__img {
+  /* Гарантия, что при просмотре фото не будет искажений */
   object-fit: contain !important;
 }
 
-/* Убираем глобальный aspect-ratio для .gallery-item, чтобы не ломать Hero на главной */
-.gallery-item img {
-  object-fit: cover !important;
+/* 4. ЧИСТКА TYPOGRAPHY */
+/* Чтобы картинки внутри текста не растягивались на весь экран */
+.prose img {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }

@@ -21,15 +21,18 @@ const pageTitle = post.title.rendered.replace(/<\/?[^>]+(>|$)/g, "");
     
     <!-- ВЕРХНИЙ БЛОК (HERO) -->
 <!-- ВЕРХНИЙ БЛОК (HERO) -->
-<header class="page-hero-container relative h-[60vh] md:h-[75vh] w-full overflow-hidden bg-[#222222] flex items-center justify-center text-center not-prose">
+<!-- ВЕРХНИЙ БЛОК (HERO) -->
+<header class="relative h-[60vh] md:h-[75vh] w-full overflow-hidden bg-[#222222] flex items-center justify-center text-center not-prose" style="display: flex !important;">
   {imageUrl && (
     <img 
+      id="hero-image-fix"
       src={imageUrl} 
-      class="page-hero-img absolute inset-0 w-full h-full object-cover" 
+      class="absolute inset-0 w-full h-full object-cover" 
+      style="width: 100% !important; height: 100% !important; object-fit: cover !important; aspect-ratio: auto !important; transform: none !important; max-height: none !important; position: absolute !important; filter: grayscale(0.2) brightness(0.6) !important;"
       alt=""
     />
   )}
-  <div class="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent"></div>
+  <div class="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent" style="z-index: 10;"></div>
   
   <div class="relative z-20 max-w-5xl mx-auto px-6">
     <time class="text-[10px] font-black text-teal-400 uppercase tracking-[0.4em] mb-6 block">
