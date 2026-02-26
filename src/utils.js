@@ -55,22 +55,15 @@ export function getCleanText(text) {
 // 2. Для ПОЛНЫХ СТРАНИЦ (вырезает шорткоды, но ОСТАВЛЯЕТ HTML-разметку)
 export function getCleanContent(html) {
   if (!html) return "";
-
   let clean = html;
 
-  // 1. ПРЕВРАЩАЕМ ШОРТКОД ГАЛЕРЕИ В НАШ БЛОК
-  // Ищем [gallery ids="1,2,3"]
+  // Добавляем класс not-prose, чтобы Tailwind Typography не мешал нам
   clean = clean.replace(/\[gallery ids="([^"]+)"\]/g, (match, ids) => {
-    return `<div class="wp-custom-gallery" data-ids="${ids}"></div>`;
+    return `<div class="wp-custom-gallery not-prose" data-ids="${ids}"></div>`;
   });
 
-  // 2. УДАЛЯЕМ ОСТАТКИ VISUAL COMPOSER (старая логика)
-  clean = clean.replace(/\[\/?[^\]]+\]/g, (match) => {
-    // Не удаляем наш только что созданный блок галереи
-    if (match.includes('wp-custom-gallery')) return match;
-    return "";
-  });
-
+  // Чистим остальное
+  clean = clean.replace(/\[\/?[^\]]+\]/g, "");
   return clean.trim();
 }
 
