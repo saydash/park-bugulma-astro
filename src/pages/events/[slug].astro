@@ -23,7 +23,7 @@ const imageUrl = getFeaturedImage(post);
 <BaseLayout title={post.title.rendered}>
   <article class="bg-white min-h-screen pb-32">
     <!-- ВЕРХНИЙ БЛОК (HERO СТАТЬИ) -->
-<header class="relative h-[60vh] md:h-[70vh] w-full overflow-hidden bg-[#222222] not-prose">
+<header class="relative h-[70vh] w-full overflow-hidden bg-[#222222] not-prose">
   <!-- СТРОГО ДЛЯ СТРАНИЦЫ ЗАПИСИ -->
 {imageUrl && (
   <img 
@@ -94,11 +94,42 @@ const imageUrl = getFeaturedImage(post);
 
 <!-- 1. СТИЛИ ГАЛЕРЕИ (вставляем прямо перед контентом) -->
 <style is:global>
-  /* 1. СЕТКА ГАЛЕРЕИ (не трогает Hero) */
+  /* 1. ВОЗВРАЩАЕМ ЗАГОЛОВОК И МАСШТАБ HERO (Изолируем от контента) */
+  header.not-prose {
+    display: flex !important; /* Гарантируем видимость */
+    height: 70vh !important;
+    min-height: 450px !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  header.not-prose img {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    transform: none !important; /* Убираем случайные масштабы */
+    aspect-ratio: auto !important;
+    opacity: 0.6 !important; /* Возвращаем приглушение для читаемости текста */
+    filter: grayscale(0.2) !important;
+  }
+
+  /* 2. ВОЗВРАЩАЕМ ТЕКСТ ЗАГОЛОВКА */
+  header.not-prose h1 {
+    display: block !important;
+    visibility: visible !important;
+    color: white !important;
+    z-index: 20 !important;
+  }
+
+  /* 3. СТИЛИ ТОЛЬКО ДЛЯ СЕТКИ ГАЛЕРЕИ (Никаких общих img!) */
   #dynamic-gallery {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 16px !important;
+    margin: 4rem 0 !important;
   }
 
   @media (min-width: 768px) {
@@ -107,28 +138,18 @@ const imageUrl = getFeaturedImage(post);
     }
   }
 
-  /* 2. КАРТИНКИ ТОЛЬКО ВНУТРИ ГАЛЕРЕИ */
-  #dynamic-gallery .pswp-gallery-item {
-    aspect-ratio: 1/1 !important; /* Только здесь превью - квадраты */
+  .pswp-gallery-item {
+    aspect-ratio: 1/1 !important;
     overflow: hidden !important;
     display: block !important;
+    border-radius: 4px !important;
   }
 
-  #dynamic-gallery .pswp-gallery-item img {
+  .pswp-gallery-item img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
-    transform: none !important;
     margin: 0 !important;
-  }
-
-  /* 3. ВОЗВРАЩАЕМ HERO ПЕРВОЗДАННЫЙ ВИД */
-  header img {
-    aspect-ratio: auto !important;
-    object-fit: cover !important;
-    height: 100% !important;
-    width: 100% !important;
-    max-height: none !important;
     transform: none !important;
   }
 </style>
