@@ -22,48 +22,20 @@ const imageUrl = getFeaturedImage(post);
 
 <BaseLayout title={post.title.rendered}>
   <article class="bg-white min-h-screen pb-32">
-    <!-- HERO СТАТЬИ -->
-    <header
-      class="relative h-[60vh] md:h-[75vh] w-full overflow-hidden bg-[#222222]"
-    >
-      {
-        imageUrl && (
-          <img
-            src={imageUrl}
-            class="absolute inset-0 w-full h-full object-cover opacity-50 grayscale-[0.2]"
-            alt=""
-          />
-        )
-      }
-      <div
-        class="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent"
-      >
-      </div>
-
-      <div
-        class="relative z-10 h-full max-w-5xl mx-auto px-6 flex flex-col justify-end pb-16 items-center text-center"
-      >
-        <time
-          class="text-[10px] font-black text-teal-400 uppercase tracking-[0.4em] mb-6"
-        >
-          {
-            new Date(post.date).toLocaleDateString("ru-RU", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })
-          }
-        </time>
-
-        <!-- Адаптивный заголовок: на мобилках меньше, на десктопе огромный -->
-        <h1
-          class="text-4xl md:text-7xl lg:text-[90px] font-black text-white tracking-tighter uppercase leading-[0.9] mb-8 max-w-4xl"
-          set:html={post.title.rendered}
-        />
-
-        <div class="h-1 w-20 bg-teal-600"></div>
-      </div>
-    </header>
+    <!-- ВЕРХНИЙ БЛОК (HERO СТАТЬИ) -->
+<header class="relative h-[60vh] md:h-[70vh] w-full overflow-hidden bg-[#222222] not-prose">
+  {imageUrl && (
+    <img 
+      src={imageUrl} 
+      class="absolute inset-0 w-full h-full object-cover object-center opacity-60 grayscale-[0.2] transition-opacity duration-1000" 
+      style="aspect-ratio: auto !important; max-height: none !important;"
+      alt=""
+    />
+  )}
+  <div class="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent"></div>
+  
+  <!-- ... остальной контент заголовка ... -->
+</header>
 
     <!-- КОНТЕНТ -->
     <div class="max-w-7xl mx-auto px-6 -mt-12 relative z-20">
