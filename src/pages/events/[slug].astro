@@ -20,25 +20,25 @@ const pageTitle = post.title.rendered.replace(/<\/?[^>]+(>|$)/g, "");
   <article class="bg-white min-h-screen pb-32">
     
     <!-- ВЕРХНИЙ БЛОК (HERO) -->
-    <header class="relative h-[60vh] md:h-[75vh] w-full overflow-hidden bg-[#222222] flex items-center justify-center text-center">
-      {imageUrl && (
-        <img 
-          src={imageUrl} 
-          class="hero-main-img absolute inset-0 w-full h-full object-cover opacity-50 grayscale-[0.2]" 
-          alt=""
-        />
-      )}
-      <div class="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent"></div>
-      
-      <!-- КОНТЕНТ ЗАГОЛОВКА (ТЕПЕРЬ НА МЕСТЕ) -->
-      <div class="relative z-20 max-w-5xl mx-auto px-6">
-        <time class="text-[10px] font-black text-teal-400 uppercase tracking-[0.4em] mb-6 block">
-          {new Date(post.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
-        </time>
-        <h1 class="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase leading-[0.9] mb-8" set:html={post.title.rendered} />
-        <div class="h-1 w-20 bg-teal-600 mx-auto"></div>
-      </div>
-    </header>
+<!-- ВЕРХНИЙ БЛОК (HERO) -->
+<header class="page-hero-container relative h-[60vh] md:h-[75vh] w-full overflow-hidden bg-[#222222] flex items-center justify-center text-center not-prose">
+  {imageUrl && (
+    <img 
+      src={imageUrl} 
+      class="page-hero-img absolute inset-0 w-full h-full object-cover" 
+      alt=""
+    />
+  )}
+  <div class="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent"></div>
+  
+  <div class="relative z-20 max-w-5xl mx-auto px-6">
+    <time class="text-[10px] font-black text-teal-400 uppercase tracking-[0.4em] mb-6 block">
+      {new Date(post.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+    </time>
+    <h1 class="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase leading-[0.9] mb-8" set:html={post.title.rendered} />
+    <div class="h-1 w-20 bg-teal-600 mx-auto"></div>
+  </div>
+</header>
 
     <!-- КОНТЕНТ СТАТЬИ -->
     <div class="max-w-7xl mx-auto px-6 -mt-12 relative z-30">
@@ -71,29 +71,38 @@ const pageTitle = post.title.rendered.replace(/<\/?[^>]+(>|$)/g, "");
 </BaseLayout>
 
 <style is:global>
-  /* СТРОГИЙ СБРОС ДЛЯ HERO ИЗОБРАЖЕНИЯ */
-  .hero-main-img {
-    aspect-ratio: auto !important;
-    transform: none !important;
+  /* 1. ГАРАНТИЯ ДЛЯ HERO (Никаких квадратов и искажений) */
+  .page-hero-container .page-hero-img {
+    aspect-ratio: auto !important; /* Отменяем любые 1/1 или 3/2 */
+    object-fit: cover !important;
     height: 100% !important;
     width: 100% !important;
-    object-fit: cover !important;
+    transform: none !important;
     max-height: none !important;
-    filter: grayscale(0.2) brightness(0.7) !important;
+    filter: grayscale(0.2) brightness(0.6) !important;
   }
 
-  /* СТИЛИ ДЛЯ КВАДРАТНОЙ СЕТКИ ГАЛЕРЕИ */
+  /* 2. СТИЛИ ТОЛЬКО ДЛЯ СЕТКИ ГАЛЕРЕИ ВНИЗУ */
+  /* Используем ID, чтобы стили не "утекли" выше */
   #dynamic-gallery .pswp-gallery-item {
-    aspect-ratio: 1/1 !important; /* Здесь квадраты уместны */
+    aspect-ratio: 1/1 !important; /* Квадраты только здесь */
     display: block !important;
     overflow: hidden !important;
     border-radius: 4px !important;
   }
+
   #dynamic-gallery .pswp-gallery-item img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
     margin: 0 !important;
+  }
+
+  /* 3. ОЧИСТКА ОТ ВЛИЯНИЯ TYPOGRAPHY (prose) */
+  .prose img {
+    /* Если в самом тексте есть картинки, они должны быть ровными */
+    aspect-ratio: auto !important;
+    border-radius: 8px;
   }
 </style>
 
