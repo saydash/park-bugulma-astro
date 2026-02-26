@@ -55,9 +55,23 @@ export function getCleanText(text) {
 // 2. Для ПОЛНЫХ СТРАНИЦ (вырезает шорткоды, но ОСТАВЛЯЕТ HTML-разметку)
 export function getCleanContent(html) {
   if (!html) return "";
-  // Удаляем ТОЛЬКО шорткоды [vc_...] и подобные. 
-  // Весь HTML (картинки, дивы, ссылки) оставляем как есть!
-  return html.replace(/\[\/?[^\]]+\]/g, "").trim();
+
+  let clean = html;
+
+  // 1. ПРЕВРАЩАЕМ ШОРТКОД ГАЛЕРЕИ В НАШ БЛОК
+  // Ищем [gallery ids="1,2,3"]
+  clean = clean.replace(/\[gallery ids="([^"]+)"\]/g, (match, ids) => {
+    return `<div class="wp-custom-gallery" data-ids="${ids}"></div>`;
+  });
+
+  // 2. УДАЛЯЕМ ОСТАТКИ VISUAL COMPOSER (старая логика)
+  clean = clean.replace(/\[\/?[^\]]+\]/g, (match) => {
+    // Не удаляем наш только что созданный блок галереи
+    if (match.includes('wp-custom-gallery')) return match;
+    return "";
+  });
+
+  return clean.trim();
 }
 
 // Универсальная функция для поиска картинки в объекте поста WordPress
