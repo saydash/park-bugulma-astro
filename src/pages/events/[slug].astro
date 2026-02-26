@@ -75,21 +75,20 @@ const imageUrl = getFeaturedImage(post);
 </BaseLayout>
 
 <style is:global>
-  /* Жесткая фиксация сетки для динамических галерей */
+  /* Принудительная активация сетки для галереи */
   .wp-custom-gallery {
     display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important; /* 2 колонки на мобилках */
+    /* 2 колонки на мобильных, 3 на десктопе */
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
     margin: 3rem 0 !important;
   }
 
-  /* На десктопе делаем 3 колонки и интересную раскладку */
   @media (min-width: 768px) {
     .wp-custom-gallery {
       grid-template-columns: repeat(3, 1fr) !important;
     }
-    
-    /* Каждое 4-е фото делаем широким для "интересной" сетки */
+    /* Делаем каждое 4-е фото широким для интереса */
     .gallery-item:nth-child(4n) {
       grid-column: span 2;
     }
@@ -98,26 +97,28 @@ const imageUrl = getFeaturedImage(post);
   .gallery-item {
     display: block;
     position: relative;
-    aspect-ratio: 3/2; /* Все фото в одном формате */
+    aspect-ratio: 4/3;
     overflow: hidden;
     background: #f4f4f4;
     border-radius: 4px;
+    cursor: zoom-in;
   }
 
   .gallery-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.6s ease;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .gallery-item:hover img {
-    transform: scale(1.05);
+    transform: scale(1.08);
   }
 </style>
 
 
 
+<!-- Подключаем библиотеку лайтбокса -->
 <script is:inline src="https://cdnjs.cloudflare.com"></script>
 
 <script is:inline>
@@ -128,7 +129,7 @@ const imageUrl = getFeaturedImage(post);
       const ids = gallery.getAttribute('data-ids').split(',');
       
       for (const id of ids) {
-        // Прокси для обхода блокировок хостинга
+        // Прокси для обхода блокировок
         const target = `https://parkbugulma.ru{id.trim()}`;
         const proxy = `https://api.allorigins.win{encodeURIComponent(target)}`;
 
@@ -141,15 +142,19 @@ const imageUrl = getFeaturedImage(post);
             a.className = 'gallery-item';
             a.setAttribute('data-fslightbox', 'gallery-main');
             a.setAttribute('href', data.source_url);
-            a.innerHTML = `<img src="${data.source_url}" loading="lazy" />`;
+            a.innerHTML = `<img src="${data.source_url}" alt="Фото парка" loading="lazy" />`;
             gallery.appendChild(a);
           }
-        } catch (e) { console.warn("Media error:", id); }
+        } catch (e) { console.warn("Ошибка загрузки фото ID:", id); }
       }
     }
-    // Оживляем лайтбокс после загрузки всех фото
-    if (window.refreshFsLightbox) refreshFsLightbox();
+    // Освежаем лайтбокс, чтобы он увидел новые фото
+    if (window.refreshFsLightbox) {
+      refreshFsLightbox();
+    }
   }
+
+  // Запуск
   initGallery();
 </script>
 
