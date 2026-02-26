@@ -19,54 +19,45 @@ const pageTitle = post.title.rendered.replace(/<\/?[^>]+(>|$)/g, "");
 <BaseLayout title={pageTitle}>
   <article class="bg-white min-h-screen pb-32">
     
-    <!-- ВЕРХНИЙ БЛОК (HERO) -->
-<!-- ВЕРХНИЙ БЛОК (HERO) -->
-<!-- ВЕРХНИЙ БЛОК (HERO) -->
-<!-- 1. HEADER С ЖЕСТКИМИ ИНЛАЙН-СТИЛЯМИ -->
-<header id="main-hero" class="relative h-[65vh] md:h-[75vh] w-full bg-[#222222] overflow-hidden flex items-center justify-center text-center not-prose" style="display: flex !important; height: 70vh !important;">
-  {imageUrl && (
-    <img 
-      id="hero-img-final"
-      src={imageUrl} 
-      alt=""
-      style="width: 100% !important; height: 100% !important; object-fit: cover !important; aspect-ratio: auto !important; position: absolute !important; inset: 0 !important; transform: none !important; max-height: none !important;"
-    />
-  )}
-  <div class="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent" style="z-index: 5;"></div>
-  
-  <div class="relative z-10 max-w-5xl mx-auto px-6">
-    <time class="text-[10px] font-black text-teal-400 uppercase tracking-[0.4em] mb-6 block">
-      {new Date(post.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
-    </time>
-    <h1 class="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase leading-[0.9] mb-8" set:html={post.title.rendered} />
-    <div class="h-1 w-20 bg-teal-600 mx-auto"></div>
-  </div>
-</header>
+    <!-- ВЕРХНИЙ БЛОК: Изолируем через ID 'fixed-hero' -->
+    <header class="relative h-[65vh] md:h-[75vh] w-full overflow-hidden bg-[#222222] flex items-center justify-center text-center not-prose">
+      {imageUrl && (
+        <img 
+          id="fixed-hero-img"
+          src={imageUrl} 
+          class="absolute inset-0 w-full h-full object-cover opacity-60 grayscale-[0.2]" 
+          alt=""
+        />
+      )}
+      <div class="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent z-10"></div>
+      
+      <div class="relative z-20 max-w-5xl mx-auto px-6">
+        <time class="text-[10px] font-black text-teal-400 uppercase tracking-[0.4em] mb-6 block">
+          {new Date(post.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+        </time>
+        <h1 class="text-4xl md:text-7xl font-black text-white tracking-tighter uppercase leading-[0.9] mb-8" set:html={post.title.rendered} />
+        <div class="h-1 w-20 bg-teal-600 mx-auto"></div>
+      </div>
+    </header>
 
-    <!-- КОНТЕНТ СТАТЬИ -->
     <div class="max-w-7xl mx-auto px-6 -mt-12 relative z-30">
-      <div class="bg-white border border-[#e5e5e5] shadow-2xl rounded-sm overflow-hidden">
-        
-        <!-- ТЕКСТ (Узкий) -->
+      <div class="bg-white border border-[#e5e5e5] shadow-2xl">
         <div class="max-w-3xl mx-auto px-6 md:px-16 pt-16 pb-8">
-          <div id="text-content" class="prose prose-slate prose-lg max-w-none prose-p:text-[#222222]/80 prose-p:leading-relaxed">
+          <div id="text-content" class="prose prose-slate prose-lg max-w-none prose-p:text-[#222222]/80">
             <div set:html={getCleanContent(post.content.rendered)} />
           </div>
         </div>
 
-        <!-- ГАЛЕРЕЯ (Широкая) -->
+        <!-- ГАЛЕРЕЯ -->
         <div id="gallery-container" class="px-6 md:px-16 pb-20 hidden">
           <div class="h-px w-full bg-[#e5e5e5] mb-16"></div>
           <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-[#222222]/30 mb-10 text-center">Фотоотчет события</h3>
           <div id="dynamic-gallery" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
         </div>
 
-        <!-- ПОДВАЛ -->
-        <div class="mt-12 py-12 border-t border-[#e5e5e5] flex flex-col md:flex-row justify-between items-center gap-8 px-16 bg-[#fafafa]">
-          <div class="text-[10px] font-black text-[#222222]/20 uppercase tracking-[0.3em]">Park Bugulma / Official Post</div>
-          <a href="javascript:history.back()" class="group flex items-center text-[11px] font-black text-teal-600 uppercase tracking-widest no-underline">
-            <span class="mr-4 group-hover:-translate-x-2 transition-transform">←</span> Назад к событиям
-          </a>
+        <div class="mt-24 pt-12 border-t border-[#e5e5e5] flex flex-col md:flex-row justify-between items-center gap-8 px-16 pb-12">
+           <div class="text-[10px] font-black text-[#222222]/20 uppercase tracking-[0.3em]">Park Bugulma / Official Post</div>
+           <a href="javascript:history.back()" class="text-[11px] font-black text-teal-600 uppercase no-underline">← Назад</a>
         </div>
       </div>
     </div>
@@ -74,51 +65,70 @@ const pageTitle = post.title.rendered.replace(/<\/?[^>]+(>|$)/g, "");
 </BaseLayout>
 
 <style is:global>
-  /* 1. ГАРАНТИЯ ДЛЯ HERO (Никаких квадратов и искажений) */
-  .page-hero-container .page-hero-img {
-    aspect-ratio: auto !important; /* Отменяем любые 1/1 или 3/2 */
+  /* ФИКС HERO: Применяем только к конкретному ID */
+  #fixed-hero-img {
+    aspect-ratio: auto !important;
     object-fit: cover !important;
-    height: 100% !important;
-    width: 100% !important;
     transform: none !important;
-    max-height: none !important;
-    filter: grayscale(0.2) brightness(0.6) !important;
+    width: 100% !important;
+    height: 100% !important;
   }
 
-  /* 2. СТИЛИ ТОЛЬКО ДЛЯ СЕТКИ ГАЛЕРЕИ ВНИЗУ */
-  /* Используем ID, чтобы стили не "утекли" выше */
+  /* ИДЕАЛЬНАЯ ГАЛЕРЕЯ (Ваша рабочая версия) */
   #dynamic-gallery .pswp-gallery-item {
-    aspect-ratio: 1/1 !important; /* Квадраты только здесь */
-    display: block !important;
+    aspect-ratio: 1/1 !important;
     overflow: hidden !important;
+    display: block !important;
     border-radius: 4px !important;
   }
-
   #dynamic-gallery .pswp-gallery-item img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
     margin: 0 !important;
   }
-
-  /* 3. ОЧИСТКА ОТ ВЛИЯНИЯ TYPOGRAPHY (prose) */
-  .prose img {
-    /* Если в самом тексте есть картинки, они должны быть ровными */
-    aspect-ratio: auto !important;
-    border-radius: 8px;
-  }
 </style>
 
-<script is:inline>
-  // Принудительно сбрасываем любые стили, которые "навесил" PhotoSwipe или Tailwind
-  function resetHero() {
-    const heroImg = document.getElementById('hero-img-final');
-    if (heroImg) {
-      heroImg.style.setProperty('aspect-ratio', 'auto', 'important');
-      heroImg.style.setProperty('object-fit', 'cover', 'important');
-      heroImg.style.setProperty('transform', 'none', 'important');
+<script>
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+  import PhotoSwipe from 'photoswipe';
+
+  async function moveAndInitGallery() {
+    const textBlock = document.getElementById('text-content');
+    const galleryGrid = document.getElementById('dynamic-gallery');
+    const galleryContainer = document.getElementById('gallery-container');
+    const wpImages = textBlock.querySelectorAll('.gallery img, .wp-block-gallery img, .gallery-item img');
+    
+    if (wpImages.length > 0) {
+      galleryContainer.classList.remove('hidden');
+      const promises = Array.from(wpImages).map((img) => {
+        return new Promise((resolve) => {
+          const fullUrl = img.src.replace(/-[0-9]+x[0-9]+(?=\.[a-z]+$)/i, '');
+          const link = document.createElement('a');
+          link.href = fullUrl;
+          link.className = 'pswp-gallery-item';
+          const tempImg = new Image();
+          tempImg.src = fullUrl;
+          tempImg.onload = () => {
+            link.dataset.pswpWidth = tempImg.width;
+            link.dataset.pswpHeight = tempImg.height;
+            link.innerHTML = `<img src="${fullUrl}" class="w-full h-full object-cover" />`;
+            galleryGrid.appendChild(link);
+            resolve();
+          };
+          tempImg.onerror = () => resolve();
+        });
+      });
+      await Promise.all(promises);
+      textBlock.querySelectorAll('.gallery, .wp-block-gallery').forEach(el => el.remove());
     }
+
+    const lightbox = new PhotoSwipeLightbox({
+      gallery: '#dynamic-gallery',
+      children: 'a.pswp-gallery-item',
+      pswpModule: PhotoSwipe
+    });
+    lightbox.init();
   }
-  window.addEventListener('load', resetHero);
-  setTimeout(resetHero, 500); // Повтор на случай медленной сборки
+  window.addEventListener('load', moveAndInitGallery);
 </script>
