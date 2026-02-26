@@ -22,19 +22,19 @@ const pageTitle = post.title.rendered.replace(/<\/?[^>]+(>|$)/g, "");
     <!-- ВЕРХНИЙ БЛОК (HERO) -->
 <!-- ВЕРХНИЙ БЛОК (HERO) -->
 <!-- ВЕРХНИЙ БЛОК (HERO) -->
-<header class="relative h-[60vh] md:h-[75vh] w-full overflow-hidden bg-[#222222] flex items-center justify-center text-center not-prose" style="display: flex !important;">
+<!-- 1. HEADER С ЖЕСТКИМИ ИНЛАЙН-СТИЛЯМИ -->
+<header id="main-hero" class="relative h-[65vh] md:h-[75vh] w-full bg-[#222222] overflow-hidden flex items-center justify-center text-center not-prose" style="display: flex !important; height: 70vh !important;">
   {imageUrl && (
     <img 
-      id="hero-image-fix"
+      id="hero-img-final"
       src={imageUrl} 
-      class="absolute inset-0 w-full h-full object-cover" 
-      style="width: 100% !important; height: 100% !important; object-fit: cover !important; aspect-ratio: auto !important; transform: none !important; max-height: none !important; position: absolute !important; filter: grayscale(0.2) brightness(0.6) !important;"
       alt=""
+      style="width: 100% !important; height: 100% !important; object-fit: cover !important; aspect-ratio: auto !important; position: absolute !important; inset: 0 !important; transform: none !important; max-height: none !important;"
     />
   )}
-  <div class="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent" style="z-index: 10;"></div>
+  <div class="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent" style="z-index: 5;"></div>
   
-  <div class="relative z-20 max-w-5xl mx-auto px-6">
+  <div class="relative z-10 max-w-5xl mx-auto px-6">
     <time class="text-[10px] font-black text-teal-400 uppercase tracking-[0.4em] mb-6 block">
       {new Date(post.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
     </time>
@@ -109,47 +109,16 @@ const pageTitle = post.title.rendered.replace(/<\/?[^>]+(>|$)/g, "");
   }
 </style>
 
-<script>
-  import PhotoSwipeLightbox from 'photoswipe/lightbox';
-  import PhotoSwipe from 'photoswipe';
-
-  async function moveAndInitGallery() {
-    const textBlock = document.getElementById('text-content');
-    const galleryGrid = document.getElementById('dynamic-gallery');
-    const galleryContainer = document.getElementById('gallery-container');
-    const wpImages = textBlock.querySelectorAll('.gallery img, .wp-block-gallery img, .gallery-item img');
-    
-    if (wpImages.length > 0) {
-      galleryContainer.classList.remove('hidden');
-      const promises = Array.from(wpImages).map((img) => {
-        return new Promise((resolve) => {
-          const fullUrl = img.src.replace(/-[0-9]+x[0-9]+(?=\.[a-z]+$)/i, '');
-          const link = document.createElement('a');
-          link.href = fullUrl;
-          link.className = 'pswp-gallery-item';
-          
-          const tempImg = new Image();
-          tempImg.src = fullUrl;
-          tempImg.onload = () => {
-            link.dataset.pswpWidth = tempImg.width;
-            link.dataset.pswpHeight = tempImg.height;
-            link.innerHTML = `<img src="${fullUrl}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />`;
-            galleryGrid.appendChild(link);
-            resolve();
-          };
-          tempImg.onerror = () => resolve();
-        });
-      });
-      await Promise.all(promises);
-      textBlock.querySelectorAll('.gallery, .wp-block-gallery').forEach(el => el.remove());
+<script is:inline>
+  // Принудительно сбрасываем любые стили, которые "навесил" PhotoSwipe или Tailwind
+  function resetHero() {
+    const heroImg = document.getElementById('hero-img-final');
+    if (heroImg) {
+      heroImg.style.setProperty('aspect-ratio', 'auto', 'important');
+      heroImg.style.setProperty('object-fit', 'cover', 'important');
+      heroImg.style.setProperty('transform', 'none', 'important');
     }
-
-    const lightbox = new PhotoSwipeLightbox({
-      gallery: '#dynamic-gallery',
-      children: 'a.pswp-gallery-item',
-      pswpModule: PhotoSwipe
-    });
-    lightbox.init();
   }
-  window.addEventListener('load', moveAndInitGallery);
+  window.addEventListener('load', resetHero);
+  setTimeout(resetHero, 500); // Повтор на случай медленной сборки
 </script>
