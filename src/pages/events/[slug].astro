@@ -102,58 +102,58 @@ const imageUrl = getFeaturedImage(post);
 <!-- 2. Скрипт-оживитель -->
 <script>
   import PhotoSwipeLightbox from 'photoswipe/lightbox';
+  import PhotoSwipe from 'photoswipe';
 
-  function initPhotoSwipe() {
-    // 1. Находим все изображения
+  async function initPhotoSwipe() {
     const images = document.querySelectorAll('.prose img, .wp-custom-gallery img');
-    
-    images.forEach((img) => {
-      if (!img.closest('a')) {
-        const link = document.createElement('a');
+    if (!images.length) return;
+
+    // 1. Подготовка ссылок
+    const promises = Array.from(images).map((img) => {
+      return new Promise((resolve) => {
+        if (img.closest('a')) return resolve();
+
         const fullUrl = img.src.replace(/-[0-9]+x[0-9]+(?=\.[a-z]+$)/i, '');
-        
+        const link = document.createElement('a');
         link.href = fullUrl;
         link.className = 'pswp-gallery-item block overflow-hidden rounded-lg';
         
-        // ВАЖНО: Не задаем размеры вообще. PhotoSwipe сам их вычислит при загрузке.
-        img.parentNode.insertBefore(link, img);
-        link.appendChild(img);
-      }
+        // Создаем временный объект изображения, чтобы узнать реальные размеры
+        const tempImg = new Image();
+        tempImg.src = fullUrl;
+        tempImg.onload = () => {
+          link.dataset.pswpWidth = tempImg.width;
+          link.dataset.pswpHeight = tempImg.height;
+          
+          img.parentNode.insertBefore(link, img);
+          link.appendChild(img);
+          resolve();
+        };
+        tempImg.onerror = () => resolve(); // Игнорируем битые ссылки
+      });
     });
 
+    // Ждем, пока все размеры будут получены
+    await Promise.all(promises);
+
+    // 2. Инициализация лайтбокса ПОСЛЕ того, как все размеры известны
     const lightbox = new PhotoSwipeLightbox({
       gallery: '.prose',
       children: 'a.pswp-gallery-item',
-      pswpModule: () => import('photoswipe'),
-      // Эти настройки гарантируют, что фото впишется в экран без искажений
+      pswpModule: PhotoSwipe,
+      // Настройки для идеального отображения
       initialZoomLevel: 'fit',
       secondaryZoomLevel: 1.5,
-      maxZoomLevel: 3,
-    });
-
-    // 2. ГЛАВНЫЙ ХУК: Вычисление размеров для каждого слайда перед показом
-    lightbox.on('contentLoad', (e) => {
-      const { content } = e;
-      if (content.type === 'image' && (!content.width || !content.height)) {
-        const dummyImg = new Image();
-        dummyImg.src = content.data.src;
-        dummyImg.onload = () => {
-          content.width = dummyImg.width;
-          content.height = dummyImg.height;
-          // Перерисовываем текущий слайд с верными пропорциями
-          if (lightbox.pswp) {
-            lightbox.pswp.refreshSlideContent(content.index);
-          }
-        };
-      }
+      maxZoomLevel: 4,
+      bgOpacity: 0.9,
     });
 
     lightbox.init();
   }
 
-  // Запуск: ждем, пока JSON отрисует контент
+  // Запуск: ждем загрузки JSON и отрисовки DOM
   window.addEventListener('load', () => {
-    setTimeout(initPhotoSwipe, 1500);
+    setTimeout(initPhotoSwipe, 1000);
   });
 </script>
 
