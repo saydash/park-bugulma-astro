@@ -24,14 +24,15 @@ const imageUrl = getFeaturedImage(post);
   <article class="bg-white min-h-screen pb-32">
     <!-- ВЕРХНИЙ БЛОК (HERO СТАТЬИ) -->
 <header class="relative h-[60vh] md:h-[70vh] w-full overflow-hidden bg-[#222222] not-prose">
-  {imageUrl && (
-    <img 
-      src={imageUrl} 
-      class="absolute inset-0 w-full h-full object-cover object-center opacity-60 grayscale-[0.2] transition-opacity duration-1000" 
-      style="aspect-ratio: auto !important; max-height: none !important;"
-      alt=""
-    />
-  )}
+  <!-- СТРОГО ДЛЯ СТРАНИЦЫ ЗАПИСИ -->
+{imageUrl && (
+  <img 
+    src={imageUrl} 
+    class="absolute inset-0 w-full h-full object-cover object-center opacity-60 grayscale-[0.2]" 
+    style="min-height: 100%; min-width: 100%; object-fit: cover !important; transform: none !important; aspect-ratio: auto !important;"
+    alt=""
+  />
+)}
   <div class="absolute inset-0 bg-gradient-to-t from-[#222222] via-transparent to-transparent"></div>
   
   <!-- ... остальной контент заголовка ... -->

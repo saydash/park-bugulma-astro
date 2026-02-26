@@ -27,11 +27,12 @@ const pageTitle = "Главная — Парк Бугульма";
 <BaseLayout title={pageTitle}>
 	<!-- ГЛАВНЫЙ БЛОК (HERO) -->
 <section class="relative h-[85vh] w-full overflow-hidden bg-[#222222]">
-  <img 
-    src="https://parkbugulma.ru/wp-content/uploads/oparkehead.jpg" 
-    class="absolute inset-0 w-full h-full object-cover opacity-60 grayscale-[0.2]"
-    alt="Панорама парка Бугульма"
-  />
+  <!-- СТРОГО ДЛЯ ГЛАВНОЙ -->
+<img 
+  src="https://parkbugulma.ru/wp-content/uploads/oparkehead.jpg" 
+  class="absolute inset-0 w-full h-full object-cover object-center" 
+  style="min-height: 100%; min-width: 100%; object-fit: cover !important; transform: none !important; aspect-ratio: auto !important; opacity: 1 !important; filter: none !important;"
+  alt="Главное фото парка""")/>
   
   <!-- Затемнение для глубины -->
   <div class="absolute inset-0 bg-gradient-to-b from-[#222222]/40 via-transparent to-[#222222]/80"></div>
