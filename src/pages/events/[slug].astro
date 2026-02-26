@@ -74,91 +74,77 @@ const imageUrl = getFeaturedImage(post);
   </article>
 </BaseLayout>
 
-<style is:global>
-  /* Принудительная активация сетки для галереи */
+<!-- Стили (Inline CSS, который браузер увидит сразу) -->
+<style is:inline>
   .wp-custom-gallery {
     display: grid !important;
-    /* 2 колонки на мобильных, 3 на десктопе */
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
-    margin: 3rem 0 !important;
+    gap: 10px !important;
+    margin: 2rem 0 !important;
+    width: 100% !important;
   }
-
   @media (min-width: 768px) {
     .wp-custom-gallery {
       grid-template-columns: repeat(3, 1fr) !important;
     }
-    /* Делаем каждое 4-е фото широким для интереса */
-    .gallery-item:nth-child(4n) {
-      grid-column: span 2;
-    }
+    .gallery-item:nth-child(4n) { grid-column: span 2 !important; }
   }
-
   .gallery-item {
-    display: block;
-    position: relative;
-    aspect-ratio: 4/3;
-    overflow: hidden;
-    background: #f4f4f4;
-    border-radius: 4px;
-    cursor: zoom-in;
+    display: block !important;
+    aspect-ratio: 3/2 !important;
+    overflow: hidden !important;
+    border-radius: 4px !important;
+    background: #eee;
   }
-
   .gallery-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    transition: transform 0.3s ease !important;
   }
-
-  .gallery-item:hover img {
-    transform: scale(1.08);
-  }
+  .gallery-item:hover img { transform: scale(1.05) !important; }
 </style>
 
-
-
-<!-- Подключаем библиотеку лайтбокса -->
-<script is:inline src="https://cdnjs.cloudflare.com"></script>
-
-<!-- 1. Библиотека для клика (Lightbox) -->
-<script is:inline src="https://cdn.jsdelivr.net"></script>
-
-<!-- 2. Скрипт подгрузки фото -->
+<!-- Скрипт подгрузки и активации Lightbox -->
 <script is:inline>
-  async function renderGallery() {
-    const galleries = document.querySelectorAll('.wp-custom-gallery');
-    
-    for (const gallery of galleries) {
-      const ids = gallery.getAttribute('data-ids').split(',');
-      
-      for (const id of ids) {
-        const target = `https://parkbugulma.ru{id.trim()}`;
-        // Прокси для обхода блокировок хостинга
-        const proxy = `https://api.allorigins.win{encodeURIComponent(target)}`;
+  (function() {
+    // 1. Подключаем библиотеку динамически
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com';
+    document.head.appendChild(script);
 
-        try {
-          const res = await fetch(proxy);
-          const data = await res.json();
-          
-          if (data.source_url) {
-            const a = document.createElement('a');
-            a.className = 'gallery-item';
-            a.setAttribute('data-fslightbox', 'gallery-main');
-            a.setAttribute('href', data.source_url);
-            a.innerHTML = `<img src="${data.source_url}" loading="lazy" />`;
-            gallery.appendChild(a);
-          }
-        } catch (e) { console.warn("Skip ID:", id); }
+    async function buildGallery() {
+      const galleries = document.querySelectorAll('.wp-custom-gallery');
+      if (!galleries.length) return;
+
+      for (const gallery of galleries) {
+        const ids = gallery.getAttribute('data-ids')?.split(',') || [];
+        
+        for (const id of ids) {
+          const target = `https://parkbugulma.ru{id.trim()}`;
+          const proxy = `https://api.allorigins.win{encodeURIComponent(target)}`;
+
+          try {
+            const res = await fetch(proxy);
+            const data = await res.json();
+            
+            if (data.source_url) {
+              const a = document.createElement('a');
+              a.className = 'gallery-item';
+              a.setAttribute('data-fslightbox', 'gallery-post');
+              a.setAttribute('href', data.source_url);
+              a.innerHTML = `<img src="${data.source_url}" loading="lazy" />`;
+              gallery.appendChild(a);
+              
+              // Важно: обновляем лайтбокс после каждой добавленной картинки
+              if (window.refreshFsLightbox) refreshFsLightbox();
+            }
+          } catch (e) { console.error("Error ID:", id); }
+        }
       }
     }
-    // Генерируем событие для Lightbox, чтобы он увидел новые фото
-    if (typeof refreshFsLightbox === 'function') {
-      refreshFsLightbox();
-    }
-  }
-  
-  // Запуск после загрузки страницы
-  window.addEventListener('DOMContentLoaded', renderGallery);
-</script>
 
+    // Запуск после полной загрузки страницы
+    window.onload = buildGallery;
+  })();
+</script>
