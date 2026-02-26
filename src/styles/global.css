@@ -1,1 +1,40 @@
 @import "tailwindcss";
+
+/* ФИНАЛЬНАЯ СЕТКА ГАЛЕРЕИ */
+.wp-custom-gallery {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 12px !important;
+  margin: 3rem 0 !important;
+  width: 100% !important;
+}
+
+@media (min-width: 768px) {
+  .wp-custom-gallery {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  /* Каждое 4-е фото — широкое */
+  .gallery-item:nth-child(4n) {
+    grid-column: span 2 !important;
+  }
+}
+
+.gallery-item {
+  display: block !important;
+  aspect-ratio: 3/2 !important;
+  overflow: hidden !important;
+  background: #f4f4f4 !important;
+  border-radius: 4px !important;
+  cursor: zoom-in !important;
+}
+
+.gallery-item img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  transition: transform 0.6s ease !important;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.05) !important;
+}

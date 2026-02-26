@@ -121,16 +121,20 @@ const imageUrl = getFeaturedImage(post);
 <!-- Подключаем библиотеку лайтбокса -->
 <script is:inline src="https://cdnjs.cloudflare.com"></script>
 
+<!-- 1. Библиотека для клика (Lightbox) -->
+<script is:inline src="https://cdn.jsdelivr.net"></script>
+
+<!-- 2. Скрипт подгрузки фото -->
 <script is:inline>
-  async function initGallery() {
+  async function renderGallery() {
     const galleries = document.querySelectorAll('.wp-custom-gallery');
     
     for (const gallery of galleries) {
       const ids = gallery.getAttribute('data-ids').split(',');
       
       for (const id of ids) {
-        // Прокси для обхода блокировок
         const target = `https://parkbugulma.ru{id.trim()}`;
+        // Прокси для обхода блокировок хостинга
         const proxy = `https://api.allorigins.win{encodeURIComponent(target)}`;
 
         try {
@@ -142,19 +146,19 @@ const imageUrl = getFeaturedImage(post);
             a.className = 'gallery-item';
             a.setAttribute('data-fslightbox', 'gallery-main');
             a.setAttribute('href', data.source_url);
-            a.innerHTML = `<img src="${data.source_url}" alt="Фото парка" loading="lazy" />`;
+            a.innerHTML = `<img src="${data.source_url}" loading="lazy" />`;
             gallery.appendChild(a);
           }
-        } catch (e) { console.warn("Ошибка загрузки фото ID:", id); }
+        } catch (e) { console.warn("Skip ID:", id); }
       }
     }
-    // Освежаем лайтбокс, чтобы он увидел новые фото
-    if (window.refreshFsLightbox) {
+    // Генерируем событие для Lightbox, чтобы он увидел новые фото
+    if (typeof refreshFsLightbox === 'function') {
       refreshFsLightbox();
     }
   }
-
-  // Запуск
-  initGallery();
+  
+  // Запуск после загрузки страницы
+  window.addEventListener('DOMContentLoaded', renderGallery);
 </script>
 
