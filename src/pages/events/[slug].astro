@@ -123,50 +123,52 @@ const imageUrl = getFeaturedImage(post);
   .prose .gallery-caption {
     display: none !important;
   }
+
+    /* Фикс для fslightbox, чтобы он всегда был поверх всего */
+  .fslightbox-container {
+    z-index: 999999 !important;
+  }
+  /* Убедимся, что курсор показывает возможность клика */
+  .gallery-item img, .gallery-icon img {
+    cursor: pointer !important;
+  }
 </style>
 
-<!-- 1. Сама библиотека (подключаем через стандартный тег) -->
-<script is:inline src="https://cdnjs.cloudflare.com"></script>
 
 <!-- 2. Скрипт-оживитель -->
 <script is:inline>
   function activateLightbox() {
-    // Находим все картинки внутри нашей плитки
-    const images = document.querySelectorAll('.gallery-item img, .gallery-icon img, .wp-block-image img');
+    // 1. Находим все картинки в галереях
+    const images = document.querySelectorAll('.prose .gallery-item img, .prose .gallery-icon img, .wp-block-image img');
     
-    if (images.length === 0) return; // Если картинок еще нет в DOM, выходим
-
     images.forEach(img => {
-      // Проверяем, не обернута ли уже картинка в ссылку
-      if (img.parentElement.tagName !== 'A') {
+      // 2. Если картинка еще не обернута в ссылку лайтбокса
+      if (!img.closest('a[data-fslightbox]')) {
         const link = document.createElement('a');
         
-        // Указываем путь к БОЛЬШОЙ картинке (убираем размер 600x400 из ссылки)
+        // Получаем чистую ссылку на оригинал (без размеров типа -600x400)
         const fullResUrl = img.src.replace(/-[0-9]+x[0-9]+(?=\.[a-z]+$)/i, '');
         
         link.setAttribute('href', fullResUrl);
-        link.setAttribute('data-fslightbox', 'gallery-event'); // Группируем для перелистывания
-        link.className = 'cursor-zoom-in block w-full h-full';
-        
-        // Оборачиваем картинку в ссылку
+        link.setAttribute('data-fslightbox', 'gallery-post'); // Группа для перелистывания
+        link.className = 'block w-full h-full cursor-zoom-in';
+
+        // 3. Оборачиваем
         img.parentNode.insertBefore(link, img);
         link.appendChild(img);
       }
     });
 
-    // Принудительно обновляем библиотеку, чтобы она увидела новые ссылки
+    // 4. ГЛАВНОЕ: Принудительно инициализируем библиотеку
     if (window.refreshFsLightbox) {
       window.refreshFsLightbox();
-      console.log("Lightbox refreshed");
     }
   }
 
-  // Запускаем проверку несколько раз, так как картинки из JSON прилетают не сразу
+  // Запуск процесса (ждем загрузки и повторяем для надежности)
   window.addEventListener('load', () => {
     activateLightbox();
-    // Повторяем через 1, 2 и 5 секунд (на всякий случай)
     setTimeout(activateLightbox, 1000);
-    setTimeout(activateLightbox, 2000);
-    setTimeout(activateLightbox, 5000);
+    setTimeout(activateLightbox, 3000);
   });
 </script>
