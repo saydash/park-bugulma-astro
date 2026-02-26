@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getPosts, getCleanText, getCleanContent, getFeaturedImage } from '../../utils.js';
+import 'photoswipe/style.css';
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -76,99 +77,67 @@ const imageUrl = getFeaturedImage(post);
 
 <!-- 1. СТИЛИ ГАЛЕРЕИ (вставляем прямо перед контентом) -->
 <style is:global>
-  /* 1. Находим стандартную обертку галереи из WordPress и превращаем в сетку */
-  .prose .gallery, 
-  .prose .wp-block-gallery {
+  /* Фикс для сетки, чтобы она не развалилась */
+  .prose .gallery, .prose .wp-block-gallery {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px !important;
     margin: 3rem 0 !important;
-    padding: 0 !important;
   }
-
   @media (min-width: 768px) {
-    .prose .gallery, 
-    .prose .wp-block-gallery {
-      grid-template-columns: repeat(3, 1fr) !important;
-    }
+    .prose .gallery { grid-template-columns: repeat(3, 1fr) !important; }
   }
-
-  /* 2. Чистим элементы внутри галереи от старых стилей WP */
-  .prose .gallery-item, 
-  .prose .gallery-icon {
-    margin: 0 !important;
-    display: block !important;
-    width: 100% !important;
-    aspect-ratio: 3/2 !important;
-    overflow: hidden !important;
-    border-radius: 8px !important;
+  .pswp-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 3/2;
+    cursor: zoom-in;
+    transition: transform 0.3s ease;
   }
-
-  /* 3. Оформляем сами картинки */
-  .prose .gallery-item img, 
-  .prose .gallery-icon img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    margin: 0 !important;
-    transition: transform 0.5s ease !important;
-    cursor: zoom-in !important;
-  }
-
-  .prose .gallery-item img:hover {
-    transform: scale(1.05) !important;
-  }
-
-  /* Убираем подписи под фото, если они мешают */
-  .prose .gallery-caption {
-    display: none !important;
-  }
-
-    /* Фикс для fslightbox, чтобы он всегда был поверх всего */
-  .fslightbox-container {
-    z-index: 999999 !important;
-  }
-  /* Убедимся, что курсор показывает возможность клика */
-  .gallery-item img, .gallery-icon img {
-    cursor: pointer !important;
-  }
+  .pswp-gallery-item:hover img { transform: scale(1.03); }
 </style>
 
 
 <!-- 2. Скрипт-оживитель -->
-<script is:inline>
-  function activateLightbox() {
-    // 1. Находим все картинки в галереях
-    const images = document.querySelectorAll('.prose .gallery-item img, .prose .gallery-icon img, .wp-block-image img');
-    
-    images.forEach(img => {
-      // 2. Если картинка еще не обернута в ссылку лайтбокса
-      if (!img.closest('a[data-fslightbox]')) {
-        const link = document.createElement('a');
-        
-        // Получаем чистую ссылку на оригинал (без размеров типа -600x400)
-        const fullResUrl = img.src.replace(/-[0-9]+x[0-9]+(?=\.[a-z]+$)/i, '');
-        
-        link.setAttribute('href', fullResUrl);
-        link.setAttribute('data-fslightbox', 'gallery-post'); // Группа для перелистывания
-        link.className = 'block w-full h-full cursor-zoom-in';
+<script>
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
 
-        // 3. Оборачиваем
+  function initPhotoSwipe() {
+    // 1. Находим все изображения в контенте WordPress
+    const images = document.querySelectorAll('.prose .gallery img, .prose .wp-block-gallery img, .prose .gallery-item img');
+    
+    images.forEach((img) => {
+      // 2. Если картинка еще не обернута, оборачиваем её в ссылку для PhotoSwipe
+      if (!img.closest('a')) {
+        const link = document.createElement('a');
+        const fullUrl = img.src.replace(/-[0-9]+x[0-9]+(?=\.[a-z]+$)/i, '');
+        
+        link.href = fullUrl;
+        link.className = 'pswp-gallery-item block overflow-hidden rounded-lg';
+        
+        // PhotoSwipe нужны данные о размере, но он умеет их угадывать
+        // Для начала поставим заглушку, он обновит её при клике
+        link.dataset.pswpWidth = '1600';
+        link.dataset.pswpHeight = '1067';
+        
         img.parentNode.insertBefore(link, img);
         link.appendChild(img);
       }
     });
 
-    // 4. ГЛАВНОЕ: Принудительно инициализируем библиотеку
-    if (window.refreshFsLightbox) {
-      window.refreshFsLightbox();
-    }
+    // 3. Инициализируем лайтбокс
+    const lightbox = new PhotoSwipeLightbox({
+      gallery: '.prose', // Ищем внутри контента статьи
+      children: 'a.pswp-gallery-item',
+      pswpModule: () => import('photoswipe')
+    });
+    
+    lightbox.init();
   }
 
-  // Запуск процесса (ждем загрузки и повторяем для надежности)
+  // Запуск: ждем загрузки данных из вашего JSON
   window.addEventListener('load', () => {
-    activateLightbox();
-    setTimeout(activateLightbox, 1000);
-    setTimeout(activateLightbox, 3000);
+    setTimeout(initPhotoSwipe, 1000); // Даем время на отрисовку сетки
   });
 </script>
