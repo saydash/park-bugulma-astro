@@ -76,6 +76,8 @@ const imageUrl = getFeaturedImage(post);
 
 <!-- Стили (Inline CSS, который браузер увидит сразу) -->
 <style is:inline>
+  /* Перебиваем настройки Tailwind Typography (prose) */
+  .prose .wp-custom-gallery, 
   .wp-custom-gallery {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
@@ -83,68 +85,87 @@ const imageUrl = getFeaturedImage(post);
     margin: 2rem 0 !important;
     width: 100% !important;
   }
+
   @media (min-width: 768px) {
+    .prose .wp-custom-gallery,
     .wp-custom-gallery {
       grid-template-columns: repeat(3, 1fr) !important;
     }
     .gallery-item:nth-child(4n) { grid-column: span 2 !important; }
   }
+
+  /* Оформление карточки фото */
   .gallery-item {
     display: block !important;
     aspect-ratio: 3/2 !important;
     overflow: hidden !important;
-    border-radius: 4px !important;
-    background: #eee;
+    border-radius: 8px !important;
+    background: #f0f0f0 !important;
+    margin: 0 !important; /* Убираем отступы от prose */
   }
+
   .gallery-item img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
+    margin: 0 !important; /* Убираем отступы от prose */
     transition: transform 0.3s ease !important;
   }
+  
   .gallery-item:hover img { transform: scale(1.05) !important; }
 </style>
 
 <!-- Скрипт подгрузки и активации Lightbox -->
 <script is:inline>
   (function() {
-    // 1. Подключаем библиотеку динамически
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com';
-    document.head.appendChild(script);
+    // 1. Загрузка библиотеки через CDN
+    const lbScript = document.createElement('script');
+    lbScript.src = 'https://cdnjs.cloudflare.com';
+    document.head.appendChild(lbScript);
 
-    async function buildGallery() {
-      const galleries = document.querySelectorAll('.wp-custom-gallery');
-      if (!galleries.length) return;
+    async function startGallery() {
+      const targetGalleries = document.querySelectorAll('.wp-custom-gallery');
+      if (!targetGalleries.length) return;
 
-      for (const gallery of galleries) {
-        const ids = gallery.getAttribute('data-ids')?.split(',') || [];
+      for (const gallery of targetGalleries) {
+        const rawIds = gallery.getAttribute('data-ids');
+        if (!rawIds) continue;
+        
+        const ids = rawIds.split(',');
         
         for (const id of ids) {
-          const target = `https://parkbugulma.ru{id.trim()}`;
-          const proxy = `https://api.allorigins.win{encodeURIComponent(target)}`;
+          // Используем прокси для обхода CORS
+          const apiUrl = `https://parkbugulma.ru{id.trim()}`;
+          const proxyUrl = `https://api.allorigins.win{encodeURIComponent(apiUrl)}`;
 
           try {
-            const res = await fetch(proxy);
-            const data = await res.json();
+            const response = await fetch(proxyUrl);
+            const mediaData = await response.json();
             
-            if (data.source_url) {
-              const a = document.createElement('a');
-              a.className = 'gallery-item';
-              a.setAttribute('data-fslightbox', 'gallery-post');
-              a.setAttribute('href', data.source_url);
-              a.innerHTML = `<img src="${data.source_url}" loading="lazy" />`;
-              gallery.appendChild(a);
+            if (mediaData.source_url) {
+              const anchor = document.createElement('a');
+              anchor.className = 'gallery-item';
+              anchor.setAttribute('data-fslightbox', 'gallery-event');
+              anchor.setAttribute('href', mediaData.source_url);
+              anchor.innerHTML = `<img src="${mediaData.source_url}" loading="lazy" />`;
               
-              // Важно: обновляем лайтбокс после каждой добавленной картинки
-              if (window.refreshFsLightbox) refreshFsLightbox();
+              gallery.appendChild(anchor);
+              
+              // Принудительно заставляем лайтбокс обновиться
+              if (window.refreshFsLightbox) {
+                window.refreshFsLightbox();
+              }
             }
-          } catch (e) { console.error("Error ID:", id); }
+          } catch (err) { console.error("Media fail:", id); }
         }
       }
     }
 
-    // Запуск после полной загрузки страницы
-    window.onload = buildGallery;
+    // Запускаем, когда DOM готов
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startGallery);
+    } else {
+      startGallery();
+    }
   })();
 </script>
