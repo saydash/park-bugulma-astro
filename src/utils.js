@@ -3,7 +3,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 import localPosts from './posts.json'; // Импортируем файл один раз здесь
 
 export async function getPosts() {
-  const targetUrl = 'https://parkbugulma.ru';
+  const targetUrl = 'https://parkbugulma.ru/wp-json/wp/v2/posts?_embed&per_page=100';
   
   try {
     // Пробуем живой запрос

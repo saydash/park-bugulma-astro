@@ -9,7 +9,7 @@ const posts = await getPosts();
 // 2. Настройка категорий (ID из твоего скриншота)
 const CAT_AFISHA = 5;
 const CAT_EVENTS = 6;
-const CAT_SMI = 7;
+
 
 // Фильтруем основные разделы
 const afisha = posts
@@ -18,57 +18,46 @@ const afisha = posts
 const reports = posts
 	.filter((p) => p.categories.includes(CAT_EVENTS))
 	.slice(0, 4);
-const smi = posts.filter((p) => p.categories.includes(CAT_SMI)).slice(0, 5);
+
 
 // Титл для вкладки браузера
-const pageTitle = "Главная — Парк Бугульма";
+const pageTitle = "Главная — Парки Бугульмы";
 ---
 
 <BaseLayout title={pageTitle}>
-	<!-- ГЛАВНЫЙ БЛОК (HERO) -->
+<!-- ГЛАВНЫЙ БЛОК (HERO) -->
 <section class="relative h-[85vh] w-full overflow-hidden bg-[#222222]">
-  <!-- СТРОГО ДЛЯ ГЛАВНОЙ -->
-<img 
-  src="https://parkbugulma.ru/wp-content/uploads/oparkehead.jpg"
-  style="width: 100% !important; height: 100% !important; object-fit: cover !important; aspect-ratio: auto !important; transform: none !important; max-height: none !important; position: absolute !important;"
-  class="absolute inset-0 w-full h-full object-cover" 
-  alt="Главное фото""")/>
+  <img 
+    src="https://parkbugulma.ru/wp-content/uploads/oparkehead.jpg"
+    class="absolute inset-0 w-full h-full object-cover" 
+    style="width: 100% !important; height: 100% !important; object-fit: cover !important;"
+    alt="Главное фото"
+  />
   
-  <!-- Затемнение для глубины -->
-  <div class="absolute inset-0 bg-gradient-to-b from-[#222222]/40 via-transparent to-[#222222]/80"></div>
+  <!-- Цветовое наложение (Бирюзовый фильтр) -->
+  <!-- mix-blend-multiply делает темные участки глубже, сохраняя детали фото -->
+  <div class="absolute inset-0 bg-teal-900/60 mix-blend-multiply"></div>
+
+  <!-- Дополнительный градиент для читаемости текста в центре -->
+  <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
   
   <!-- Контент по центру -->
   <div class="relative z-10 h-full max-w-7xl mx-auto px-6 flex flex-col items-center justify-center text-center">
     
-    <!-- Тонкая бирюзовая линия над заголовком -->
-    <div class="mb-8 h-px w-24 bg-teal-500 shadow-[0_0_15px_rgba(20,184,166,0.8)]"></div>
+    <!-- Тонкая бирюзовая линия -->
+    <div class="mb-8 h-px w-24 bg-teal-400 shadow-[0_0_20px_rgba(45,212,191,0.8)]"></div>
     
     <h1 class="text-6xl md:text-[120px] font-black text-white tracking-tighter uppercase leading-[0.8] mb-10 drop-shadow-2xl">
-      Детский <br/> 
-      <span class="font-light italic opacity-90">Парк</span>
+      Парки <br/> 
+      <span class="font-light italic opacity-90">Бугульмы</span>
     </h1>
     
-    <p class="text-lg md:text-xl text-white/70 max-w-2xl font-light leading-relaxed mb-12 tracking-tight">
-      Главная точка притяжения Бугульмы. Место, где история города <br class="hidden md:block"/> встречается с современным отдыхом.
+    <p class="drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] text-lg md:text-xl text-white max-w-2xl font-light leading-relaxed mb-12 tracking-tight">
+      Главные точки притяжения Бугульмы. Места, где история города встречается с современным отдыхом.
     </p>
-
-    <!-- КНОПКА КАРТЫ С БИРЮЗОВЫМ АКЦЕНТОМ -->
-    <a 
-      href="/map" 
-      class="group relative inline-flex items-center gap-4 px-10 py-4 border border-white/30 rounded-full text-white text-[11px] font-bold uppercase tracking-[0.3em] overflow-hidden transition-all duration-500 hover:border-teal-500 no-underline"
-    >
-      <!-- Эффект бирюзового свечения при наведении -->
-      <div class="absolute inset-0 bg-teal-600 translate-y-full group-hover:translate-y-0 transition-transform duration-500 -z-10"></div>
-      
-      <svg xmlns="http://www.w3.org" class="h-4 w-4 text-teal-400 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-      
-      <span class="group-hover:text-white transition-colors">Посмотреть карту парка</span>
-    </a>
   </div>
 </section>
+
 
 	<!-- СЕКЦИЯ 1: АФИША (Чистая плитка) -->
 	<section class="max-w-7xl mx-auto px-6 py-24">
@@ -178,51 +167,7 @@ const pageTitle = "Главная — Парк Бугульма";
   </div>
 </section>
 
-<!-- СЕКЦИЯ 3: СМИ О НАС -->
-<!-- Изменили max-w-4xl на max-w-7xl, чтобы выровнять по краям с Афишей -->
-<section class="max-w-7xl mx-auto px-6 py-32 border-t border-[#e5e5e5]">
-  
-  <!-- Заголовок и кнопка теперь будут по краям широкого контейнера -->
-  <div class="flex flex-col md:flex-row justify-between items-center md:items-end mb-16 pb-10 gap-6 border-b border-[#e5e5e5]">
-    <h2 class="text-4xl md:text-6xl font-bold tracking-tighter uppercase text-[#222222]">
-      СМИ <span class="font-light italic text-teal-600 opacity-30 ml-2">о нас</span>
-    </h2>
-    
-    <a 
-      href="/news" 
-      class="px-8 py-3 border-2 border-teal-600 rounded-lg text-[13px] font-bold uppercase tracking-widest text-[#222222] hover:text-teal-600 transition-all duration-300 no-underline shadow-sm hover:shadow-md active:scale-95"
-    >
-      Все публикации
-    </a>
-  </div>
 
-  <!-- Чтобы сам список новостей не был слишком растянутым на больших экранах, 
-       ограничим только внутренний блок списка (опционально) -->
-  <div class="divide-y divide-[#e5e5e5] max-w-5xl">
-    {smi.map((post) => (
-      <a 
-        href={`/events/${decodeURIComponent(post.slug)}`} 
-        class="group flex flex-col md:flex-row md:items-center justify-between py-8 no-underline transition-all"
-      >
-        <div class="flex flex-col gap-2">
-          <time class="text-[10px] font-bold text-teal-600 uppercase tracking-[0.2em] opacity-50 group-hover:opacity-100 transition-opacity">
-            {new Date(post.date).toLocaleDateString('ru-RU')}
-          </time>
-          <h3 
-            class="text-xl md:text-2xl font-bold text-[#222222] group-hover:translate-x-2 transition-transform duration-500 ease-out leading-tight" 
-            set:html={post.title.rendered} 
-          />
-        </div>
-
-        <div class="mt-4 md:mt-0 text-teal-600 opacity-0 group-hover:opacity-100 transition-all -translate-x-4 group-hover:translate-x-0">
-          <svg xmlns="http://www.w3.org" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-          </svg>
-        </div>
-      </a>
-    ))}
-  </div>
-</section>
 <section class="max-w-7xl mx-auto px-6 py-24">
   <div class="flex flex-col md:flex-row justify-between items-end mb-16 border-b border-[#e5e5e5] pb-10 gap-6">
     <h2 class="text-4xl md:text-6xl font-bold tracking-tighter uppercase text-[#222222]">
@@ -233,7 +178,7 @@ const pageTitle = "Главная — Парк Бугульма";
   <!-- Контейнер для карты с нашими скруглениями -->
   <div class="w-full h-[600px] bg-kz-gray overflow-hidden border border-kz-border relative">
     <!-- ВСТАВЬТЕ ВАШ КОД ИЗ КОНСТРУКТОРА НИЖЕ -->
-    <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A3680b2aa886fdba8dbc8bb3752211e7da748fd1f816dc47b7808c3c3777f1fa1&amp;width=100%25&amp;height=589&amp;lang=ru_RU&amp;scroll=true"></script>
+    <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A3680b2aa886fdba8dbc8bb3752211e7da748fd1f816dc47b7808c3c3777f1fa1&amp;width=100%25&amp;height=720&amp;lang=ru_RU&amp;scroll=true"></script>
   </div>
 </section>
 

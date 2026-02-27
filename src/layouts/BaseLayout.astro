@@ -7,7 +7,7 @@ const navItems = [
   { name: 'Главная', url: '/' },
   { name: 'Афиша', url: '/events' },
   { name: 'События', url: '/reports' },
-  { name: 'СМИ о нас', url: '/smi' },
+  { name: 'Пространства', url: '/locations' },
   { name: 'О парке', url: '/about' },
 ];
 ---
@@ -29,10 +29,19 @@ const navItems = [
       <div class="max-w-7xl mx-auto px-6 w-full flex justify-between items-center">
         
         <!-- ЛОГОТИП (Бирюзовая Бугульма) -->
-        <a href="/" class="group flex items-center no-underline transition-transform active:scale-95">
-          <span class="text-lg md:text-xl font-bold tracking-tighter text-[#222222] uppercase">Парк</span>
-          <span class="text-lg md:text-xl font-light text-teal-600 uppercase tracking-tighter ml-1.5">Бугульма</span>
-        </a>
+<div class="flex items-center gap-4">
+  <!-- Здесь графическая часть логотипа -->
+
+
+
+
+  
+  <div class="flex flex-col leading-tight uppercase font-bold text-sm tracking-wide">
+    <span class="text-slate-900">Дирекция</span>
+    <span class="text-slate-900">парков и скверов</span>
+    <span class="text-teal-500">города Бугульмы</span>
+  </div>
+</div>
 
         <!-- ДЕСКТОП МЕНЮ (Скрыто на мобилках) -->
         <nav class="hidden md:flex items-center gap-10">
@@ -63,7 +72,7 @@ const navItems = [
           ))}
         </nav>
         <div class="mt-20 pt-10 border-t border-[#e5e5e5] w-full max-w-[200px] text-[10px] font-bold text-[#222222]/30 uppercase tracking-[0.4em]">
-          Park Bugulma / 2024
+          Парки Бугульмы / 2026
         </div>
       </div>
     </header>
@@ -82,8 +91,8 @@ const navItems = [
       <!-- 1. ЛОГОТИП И ИНФО -->
       <div class="col-span-1 md:col-span-2">
         <a href="/" class="group flex items-center no-underline mb-8">
-          <span class="text-xl font-bold tracking-tighter text-white uppercase">Парк</span>
-          <span class="text-xl font-light text-teal-500 uppercase tracking-tighter ml-1.5">Бугульма</span>
+          <span class="text-xl font-bold tracking-tighter text-white uppercase">Парки</span>
+          <span class="text-xl font-light text-teal-500 uppercase tracking-tighter ml-1.5">Бугульмы</span>
         </a>
         <p class="text-[13px] leading-relaxed max-w-sm font-light">
           Мы создаем современные пространства для жизни и отдыха в Бугульме. Сохраняем историю города и внедряем лучшие практики урбанистики.
