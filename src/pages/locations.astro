@@ -1,0 +1,125 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// 1. Описываем интерфейс (в единственном числе - Park)
+interface Park {
+  parkTitle: string;
+  slug: string;
+  image: string;
+}
+
+// 2. Объявляем массив СТРОГО внутри разделителей ---
+const parks: Park[] = [
+  { 
+    parkTitle: "Парк культуры и отдыха", 
+    slug: "park-id-1", 
+    image: "https://via.placeholder.com" 
+  },
+  { 
+    parkTitle: "Сокольская гора", 
+    slug: "sokolka", 
+    image: "https://via.placeholder.com" 
+  },
+  { 
+    parkTitle: "Центральная площадь", 
+    slug: "centralnaya-ploshad", 
+    image: "https://via.placeholder.com" 
+  },
+  { 
+    parkTitle: "Набережная водоёма", 
+    slug: "naberezhnaya", 
+    image: "https://via.placeholder.com" 
+  },
+    { 
+    parkTitle: "Фонтаны возле ЦУМа", 
+    slug: "naberezhnaya", 
+    image: "https://via.placeholder.com" 
+  },
+    { 
+    parkTitle: "Площадь Дома техники", 
+    slug: "dom-techniki", 
+    image: "https://via.placeholder.com" 
+  },
+    { 
+    parkTitle: "Детский парк", 
+    slug: "detskiy-park", 
+    image: "https://via.placeholder.com" 
+  },
+    { 
+    parkTitle: "Сквер Дворец молодежи", 
+    slug: "skver-dvorec-molodezhy", 
+    image: "https://via.placeholder.com" 
+  },
+    { 
+    parkTitle: "Сквер им. П. Ненастина", 
+    slug: "skver-petra-nenastina", 
+    image: "https://via.placeholder.com" 
+  },
+      { 
+    parkTitle: "Сквер им. С. Сайдашева", 
+    slug: "skver-saliha-saydasheva", 
+    image: "https://via.placeholder.com" 
+  },
+];
+---
+
+<BaseLayout title="Парки Бугульмы">
+  <main class="bg-white">
+    
+
+
+       <!-- Hero Секция -->
+    <section class="relative h-[40vh] min-h-[300px] flex items-center justify-center bg-zinc-900 overflow-hidden">
+      <div class="absolute inset-0 z-0 opacity-50">
+        <img src="https://parkbugulma.ru/wp-content/uploads/oparkehead.jpg" alt="Background" class="w-full h-full object-cover" />
+      </div>
+      
+      <div class="relative z-10 text-center px-4">
+        <!-- Тонкий заголовок: font-light и tracking-wide -->
+        <h1 class="text-4xl md:text-5xl font-light text-white mb-3 tracking-wide drop-shadow-sm uppercase">
+          Парки и скверы
+        </h1>
+        <p class="text-sm md:text-base text-zinc-300 max-w-xl mx-auto tracking-[0.2em] font-extralight">
+          Откройте для себя лучшие места для отдыха в Бугульме
+        </p>
+      </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-6 py-16">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+    {parks.map((item) => (
+      <a 
+        href={`/parks/${item.slug}`} 
+        class="group relative block aspect-[4/5] overflow-hidden rounded-xl bg-zinc-200 transition-all duration-500"
+      >
+        <!-- Слой 1: Основная фотография (фон) -->
+        <img 
+          src={item.image} 
+          alt={item.parkTitle} 
+          class="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
+        />
+
+        <!-- Слой 2: Светло-бирюзовая подложка -->
+        <!-- По умолчанию видна (opacity-100), при наведении исчезает (group-hover:opacity-0) -->
+        <div class="absolute inset-0 z-10 bg-[var(--color-teal-600)]/20 transition-opacity duration-500 group-hover:opacity-0"></div>
+
+        <!-- Слой 3: Легкий градиент для текста (всегда виден снизу для читаемости) -->
+        <div class="absolute inset-0 z-20 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60"></div>
+        
+        <!-- Контент -->
+        <div class="absolute inset-0 z-30 flex flex-col justify-end p-8">
+  <h2 class="text-xl md:text-2xl font-light text-white tracking-wide transition-colors duration-500 group-hover:text-[var(--color-teal-600)]">
+    {item.parkTitle}
+  </h2>
+  
+  <!-- Линия тоже будет менять цвет вместе с текстом -->
+  <div class="mt-4 w-12 h-px bg-white/50 transition-all duration-500 group-hover:w-full group-hover:bg-[var(--color-teal-600)]">
+  </div>
+</div>
+      </a>
+    ))}
+  </div>
+</section>
+
+  </main>
+</BaseLayout>
