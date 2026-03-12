@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// Данные конкретного парка (в будущем придут из WordPress по slug)
+const park = {
+  title: "Парк культуры и отдыха",
+  subtitle: "Главное пространство для семейного отдыха",
+  heroImage: "https://parkbugulma.ru/wp-content/uploads/tempForAstra/pkio2.jpg", // Замените на вашу ссылку
+};
+---
+
+<BaseLayout title={park.title}>
+  <main class="bg-white">
+    
+        <!-- Hero Секция (Увеличенная высота) -->
+    <section class="relative h-[85vh] min-h-[600px] flex items-end bg-zinc-900 overflow-hidden">
+      <!-- Фоновое изображение -->
+      <div class="absolute inset-0 z-0">
+        <img 
+          src={park.heroImage} 
+          alt={park.title} 
+          class="w-full h-full object-cover opacity-60 transition-transform duration-[10000ms] hover:scale-110"
+        />
+        <!-- Более глубокий градиент для высокого Hero -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+      </div>
+      
+      <!-- Заголовок в Hero (снизу слева) -->
+      <div class="relative z-10 max-w-7xl mx-auto px-6 pb-24 w-full">
+        <div class="overflow-hidden">
+           <p class="text-teal-500 uppercase tracking-[0.4em] text-xs md:text-sm font-medium mb-6 animate-fade-in-up">
+            Общественное пространство
+          </p>
+        </div>
+        <h1 class="text-5xl md:text-8xl font-light text-white tracking-tight leading-[0.9] max-w-4xl">
+          {park.title}
+        </h1>
+      </div>
+    </section>
+
+    <!-- Секция с контентом -->
+    <section class="max-w-4xl mx-auto px-6 py-32">
+      <div class="prose prose-zinc lg:prose-xl">
+        <!-- Вводный абзац (более крупный) -->
+        <p class="text-xl md:text-2xl font-light text-zinc-800 leading-relaxed mb-12">
+          {park.subtitle}. Один из старейших и самых любимых парков города, сохранивший атмосферу спокойствия и уюта в самом сердце Бугульмы.
+        </p>
+
+        <!-- Основной текст -->
+        <div class="space-y-8 text-zinc-600 font-light leading-loose text-lg">
+          <p>
+            Парк культуры и отдыха — это место, где история встречается с современностью. После масштабной реновации территория превратилась в многофункциональный комплекс, предлагающий возможности как для активного досуга, так и для тихого созерцания природы.
+          </p>
+          
+          <p>
+            Здесь проложены удобные пешеходные маршруты, обустроены современные детские игровые зоны и площадки для воркаута. Особое внимание уделено сохранению многолетних зеленых насаждений, которые создают уникальный микроклимат и естественную тень в летние дни.
+          </p>
+
+          <p>
+            Еженедельно в парке проходят культурные мероприятия, мастер-классы и локальные маркеты, организуемые Дирекцией парков и скверов. Это пространство, которое живет и меняется вместе с городом, оставаясь при этом верным своим традициям.
+          </p>
+        </div>
+
+        <!-- Кнопка возврата (опционально) -->
+        <div class="mt-24 pt-12 border-t border-zinc-100 mb-20">
+          <a 
+            href="/locations" 
+            class="inline-flex items-center gap-3 text-teal-600 font-light tracking-widest uppercase text-sm transition-all duration-300 hover:text-zinc-900 group"
+          >
+            <span class="text-xl transform transition-transform group-hover:-translate-x-2">←</span> 
+            Вернуться к списку парков
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</BaseLayout>

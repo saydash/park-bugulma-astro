@@ -12,38 +12,38 @@ interface Park {
 const parks: Park[] = [
   { 
     parkTitle: "Парк культуры и отдыха", 
-    slug: "park-id-1", 
-    image: "https://via.placeholder.com" 
+    slug: "park-kultury-otdyha", 
+    image: "https://parkbugulma.ru/wp-content/uploads/tempForAstra/pkio2.jpg" 
   },
   { 
     parkTitle: "Сокольская гора", 
     slug: "sokolka", 
-    image: "https://via.placeholder.com" 
+    image: "https://parkbugulma.ru/wp-content/uploads/tempForAstra/sokolka.jpg" 
   },
   { 
     parkTitle: "Центральная площадь", 
     slug: "centralnaya-ploshad", 
-    image: "https://via.placeholder.com" 
+    image: "https://parkbugulma.ru/wp-content/uploads/tempForAstra/centr1.jpg" 
   },
   { 
     parkTitle: "Набережная водоёма", 
     slug: "naberezhnaya", 
-    image: "https://via.placeholder.com" 
+    image: "https://static.tildacdn.com/tild3139-3339-4639-b262-623234636566/SAN_0361.jpg" 
   },
     { 
     parkTitle: "Фонтаны возле ЦУМа", 
     slug: "naberezhnaya", 
-    image: "https://via.placeholder.com" 
+    image: "https://parkbugulma.ru/wp-content/uploads/tempForAstra/fontanyCUM.jpg" 
   },
     { 
     parkTitle: "Площадь Дома техники", 
     slug: "dom-techniki", 
-    image: "https://via.placeholder.com" 
+    image: "https://parkbugulma.ru/wp-content/uploads/tempForAstra/dt.jpg" 
   },
     { 
     parkTitle: "Детский парк", 
     slug: "detskiy-park", 
-    image: "https://via.placeholder.com" 
+    image: "https://parkbugulma.ru/wp-content/uploads/photoalbum/parkphoto/parkphoto-(7).jpg" 
   },
     { 
     parkTitle: "Сквер Дворец молодежи", 
@@ -53,7 +53,7 @@ const parks: Park[] = [
     { 
     parkTitle: "Сквер им. П. Ненастина", 
     slug: "skver-petra-nenastina", 
-    image: "https://via.placeholder.com" 
+    image: "https://parkbugulma.ru/wp-content/uploads/tempForAstra/Nenastina1.jpg" 
   },
       { 
     parkTitle: "Сквер им. С. Сайдашева", 
@@ -108,13 +108,16 @@ const parks: Park[] = [
         
         <!-- Контент -->
         <div class="absolute inset-0 z-30 flex flex-col justify-end p-8">
-  <h2 class="text-xl md:text-2xl font-light text-white tracking-wide transition-colors duration-500 group-hover:text-[var(--color-teal-600)]">
+<!-- Контент (слой z-30) -->
+<div class="absolute inset-0 z-30 flex flex-col justify-end p-8">
+  <h2 class="text-xl md:text-2xl font-light text-white tracking-wide transition-colors duration-500">
     {item.parkTitle}
   </h2>
   
-  <!-- Линия тоже будет менять цвет вместе с текстом -->
-  <div class="mt-4 w-12 h-px bg-white/50 transition-all duration-500 group-hover:w-full group-hover:bg-[var(--color-teal-600)]">
+  <!-- Тонкая белая линия (убрали смену цвета на бирюзовый) -->
+  <div class="mt-4 w-12 h-px bg-white/50 transition-all duration-500 group-hover:w-full">
   </div>
+</div>
 </div>
       </a>
     ))}
